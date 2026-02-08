@@ -1,13 +1,13 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Toine Scripts Docs",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#811b1b",
+    "light": "#811b1b",
+    "dark": "#811b1b"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/images/TS.png",
   "navigation": {
     "tabs": [
       {
@@ -84,14 +84,14 @@
     }
   },
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "light": "/images/ts_logo_large.svg",
+    "dark": "/images/ts_logo_large.svg"
   },
   "navbar": {
     "links": [
       {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "label": "Store",
+        "href": "https://store.toine.me"
       }
     ],
     "primary": {
@@ -114,9 +114,22 @@
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "website": "https://store.toine.me",
+      "discord": "https://discord.gg/4dv9FB6g4G"
     }
+  },
+  "description": "You can find here all the infos about our scripts.",
+  "background": {
+    "decoration": "grid"
+  },
+  "appearance": {
+    "strict": true,
+    "default": "dark"
+  },
+  "fonts": {
+    "family": "Montserrat"
+  },
+  "metadata": {
+    "timestamp": true
   }
 }
