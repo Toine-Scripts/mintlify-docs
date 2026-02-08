@@ -1,0 +1,43 @@
+---
+title: "Persistance"
+description: "Keep you vehicle where it should be !"
+---
+
+To install this script you need to follow these steps.
+
+## 1. Dependencies
+
+This script requires the following dependencies:
+
+- [ox\_lib](https://github.com/communityox/ox_lib/releases) Follow their [installation](https://coxdocs.dev/ox_lib) instructions.
+- [oxmysql](https://github.com/communityox/oxmysql/releases) Follow their [installation](https://coxdocs.dev/oxmysql) instructions.
+
+## 2. Framework
+
+This script requires a framework to work. You can choose between:
+
+- [QBCore](https://github.com/qbcore/qb-core)
+- [QBox](https://github.com/qbcore/qb-core)
+- [ESX](https://github.com/qbcore/qb-core)
+- Custom -- This need you're own integration with the script. Watch here for more information. [Custom Framework](https://github.com/qbcore/qb-core)
+
+You need to set this into the `config.lua` file.
+
+```lua
+Config.Framework = "qb" -- "qb", "esx", "custom"
+```
+
+## 3. Installation
+
+1. Add the script to your `resources` folder.
+2. Add `ensure persistance` to your `server.cfg`.
+
+
+```cfg
+ensure <your framework>
+
+ensure ox_lib
+ensure oxmysql
+
+ensure ts-persistance ## you need to add this 
+```
