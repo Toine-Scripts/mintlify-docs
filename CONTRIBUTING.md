@@ -1,34 +1,35 @@
-> **Customize this file**: Tailor this template to your project by noting specific contribution types you're looking for, adding a Code of Conduct, or adjusting the writing guidelines to match your style.
+# Contributing to Toine Scripts Documentation
 
-# Contribute to the documentation
+Thank you for your interest in improving our documentation! We appreciate help from the community to keep our guides accurate and helpful.
 
-Thank you for your interest in contributing to our documentation! This guide will help you get started.
+## Getting Started
 
-## How to contribute
+To contribute, you will need:
+- **Node.js** installed on your machine.
+- **Mintlify CLI** (`npm i -g mintlify`).
+- A clear understanding of the changes you want to make.
 
-### Option 1: Edit directly on GitHub
+## How to Contribute
 
-1. Navigate to the page you want to edit
-2. Click the "Edit this file" button (the pencil icon)
-3. Make your changes and submit a pull request
+1. **Fork the Repository**: Click the "Fork" button on the top right of this repository.
+2. **Clone Your Fork**: Clone your forked repository to your local machine.
+3. **Create a Branch**: Create a new branch for your changes (e.g., `fix/typo-installation`, `feat/new-guide`).
+4. **Make Changes**: Edit the `.mdx` files as needed.
+5. **Test Locally**: Run `mint dev` to preview your changes and ensure everything looks correct. **This is mandatory.**
+6. **Commit & Push**: Commit your changes with a clear message and push to your fork.
+7. **Submit a Pull Request**: Open a PR to the main repository.
 
-### Option 2: Local development
+## Pull Request Guidelines
 
-1. Fork and clone this repository
-2. Install the Mintlify CLI: `npm i -g mint`
-3. Create a branch for your changes
-4. Make changes
-5. Navigate to the docs directory and run `mint dev`
-6. Preview your changes at `http://localhost:3000`
-7. Commit your changes and submit a pull request
+When submitting a Pull Request, please ensure you:
 
-For more details on local development, see our [development guide](development.mdx).
+- **Explain your changes**: Provide a clear description of what you changed and why.
+- **Verify links**: Check that all internal and external links are working.
+- **Follow the style**: Keep the tone professional and consistent with the existing documentation.
+- **One fix per PR**: Try to keep Pull Requests focused on a single topic or fix.
 
-## Writing guidelines
+## Reporting Issues
 
-- **Use active voice**: "Run the command" not "The command should be run"
-- **Address the reader directly**: Use "you" instead of "the user"
-- **Keep sentences concise**: Aim for one idea per sentence
-- **Lead with the goal**: Start instructions with what the user wants to accomplish
-- **Use consistent terminology**: Don't alternate between synonyms for the same concept
-- **Include examples**: Show, don't just tell
+If you find a bug in the documentation but don't know how to fix it, please join our [Discord Server](https://store.toine.me/discord) and report it in the appropriate channel.
+
+Thank you for helping us make Toine Scripts better!

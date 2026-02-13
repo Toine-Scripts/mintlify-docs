@@ -1,43 +1,48 @@
-# Mintlify Starter Kit
+# Toine Scripts Documentation
 
-Use the starter kit to get your docs deployed and ready to customize.
+> **Pro Quality. Without the Pro Price.**
 
-Click the green **Use this template** button at the top of this repo to copy the Mintlify starter kit. The starter kit contains examples with
+Welcome to the official documentation repository for [Toine Scripts](https://store.toine.me). Here you will find detailed guides, installation instructions, and configuration options for all our resources.
 
-- Guide pages
-- Navigation
-- Customizations
-- API reference pages
-- Use of popular components
+[**View Live Documentation**](https://docs.toine.me)
 
-**[Follow the full quickstart guide](https://starter.mintlify.com/quickstart)**
+## 🔗 Links
 
-## Development
+- **Store**: [https://store.toine.me](https://store.toine.me)
+- **Discord Support**: [https://store.toine.me/discord](https://store.toine.me/discord)
+- **Documentation**: [https://docs.toine.me](https://docs.toine.me)
 
-Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview your documentation changes locally. To install, use the following command:
+## 🛠️ Development
 
-```
-npm i -g mint
-```
+This documentation is built with [Mintlify](https://mintlify.com/).
 
-Run the following command at the root of your documentation, where your `docs.json` is located:
+### Prerequisites
 
-```
-mint dev
-```
+- [Node.js](https://nodejs.org/)
+- [Mintlify CLI](https://mintlify.com/docs/development)
 
-View your local preview at `http://localhost:3000`.
+### Installation
 
-## Publishing changes
+1. Install Mintlify globally:
+   ```bash
+   npm i -g mintlify
+   ```
 
-Install our GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app) to propagate changes from your repo to your deployment. Changes are deployed to production automatically after pushing to the default branch.
+2. Clone this repository and navigate to the directory.
 
-## Need help?
+3. Run the development server:
+   ```bash
+   mint dev
+   ```
 
-### Troubleshooting
+The documentation will be available locally at `http://localhost:3000`.
 
-- If your dev environment isn't running: Run `mint update` to ensure you have the most recent version of the CLI.
-- If a page loads as a 404: Make sure you are running in a folder with a valid `docs.json`.
+## 🤝 Contributing
 
-### Resources
-- [Mintlify documentation](https://mintlify.com/docs)
+We welcome contributions from the community! If you spot a typo, a missing instruction, or want to improve a guide, feel free to submit a Pull Request.
+
+Please review our [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+
+## 📄 License
+
+The content of this documentation is copyright © Toine Scripts. You are free to contribute and improve the documentation, but the scripts themselves are proprietary.
