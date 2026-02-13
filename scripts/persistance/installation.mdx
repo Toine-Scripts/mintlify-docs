@@ -35,15 +35,20 @@ Config.Framework = "qb" -- "qb", "esx", "custom"
 
 ## 3. Installation
 
-1. Add the script to your `resources` folder.
-2. Add `ensure persistance` to your `server.cfg`.
+<Steps>
+  <Step title="Add the script">
+    Add the `ts-persistance` folder to your server's `resources` directory.
+  </Step>
+  <Step title="Configure server.cfg">
+    Add `ensure ts-persistance` to your `server.cfg` file, ensuring it starts after its dependencies.
+    
+    ```js server.cfg
+    ensure <your_framework>
 
+    ensure ox_lib
+    ensure oxmysql
 
-```js server.cfg
-ensure <your_framework>
-
-ensure ox_lib
-ensure oxmysql
-
-ensure ts-persistance // [!code ++] You need to add this line
-```
+    ensure ts-persistance
+    ```
+  </Step>
+</Steps>
