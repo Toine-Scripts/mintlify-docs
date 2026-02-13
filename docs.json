@@ -31,7 +31,28 @@
           {
             "group": "Scripts",
             "pages": [
-              "scripts/persistance/index"
+              {
+                "group": "Persistence",
+                "pages": [
+                  "scripts/persistance/index",
+                  "scripts/persistance/installation",
+                  {
+                    "group": "Exports",
+                    "pages": [
+                      "scripts/persistance/exports/client",
+                      "scripts/persistance/exports/server"
+                    ]
+                  },
+                  "scripts/persistance/data-structure",
+                  {
+                    "group": "Plugins",
+                    "pages": [
+                      "scripts/persistance/plugins/index",
+                      "scripts/persistance/plugins/vehicle-deformation"
+                    ]
+                  }
+                ]
+              }
             ]
           }
         ]

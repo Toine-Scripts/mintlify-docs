@@ -1,0 +1,31 @@
+---
+title: "Vehicle Deformation"
+description: "Sync vehicle deformation using the VehicleDeformation resource."
+icon: "car-crash"
+---
+
+This plugin allows you to sync vehicle deformation using the [VehicleDeformation](https://github.com/Kiminaze/VehicleDeformation) resource.
+
+> All credits for the deformation logic go to [Kiminaze](https://github.com/Kiminaze). We simply provide a bridge to use it with our persistence system.
+
+## Requirements
+
+- [VehicleDeformation](https://github.com/Kiminaze/VehicleDeformation) by Kiminaze
+
+## Configuration
+
+To enable this plugin, set `Config.Bridge.VehicleDeformation` to `true` in `shared/config.lua`.
+
+```lua shared/config.lua
+Config.Bridge.VehicleDeformation = true
+```
+
+## How it works
+
+When enabled, the script will use the `GetVehicleDeformation` export from `VehicleDeformation` to save the deformation data of the vehicle.
+This data is then applied when the vehicle is spawned.
+
+
+## Disclaimer
+
+This script does not contain any code from the original resource, it only uses the exports provided by it, respecting the original license.

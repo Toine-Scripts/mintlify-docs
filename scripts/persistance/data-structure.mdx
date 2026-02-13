@@ -1,0 +1,52 @@
+---
+title: "Data Structure"
+description: "The structure of the vehicle data used by the persistence system."
+icon: "database"
+---
+
+This is how the script sees the data of a vehicle. This data is what is returned by `GetVehiclePersistanceData`.
+
+```lua
+{
+    netId = 123, -- Network ID of the vehicle
+    plate = "ABC 123", -- Plate text
+    coords = vector3(0.0, 0.0, 0.0), -- Current coordinates
+    hash = 123456789, -- Model hash
+    model = "adder", -- Model name
+    props = { ... }, -- Vehicle properties (mods, colors, etc.) from ox_lib
+    trailer = { -- Trailer data if attached
+        netId = 456,
+        hash = 987654321,
+        model = "trailer",
+        coords = vector3(0.0, -10.0, 0.0),
+    } or false,
+    doorStatus = { ... }, -- Door lock status
+    damageData = { -- Damage information
+        bodyDamage = 1000.0,
+        engineDamage = 1000.0,
+        fuel = 100.0,
+        deformation = { ... }
+    }
+}
+```
+
+## Detailed Breakdown
+
+### Props
+The `props` table contains all the vehicle modifications and customization options. It is retrieved using `lib.getVehicleProperties`.
+
+### Damage Data
+The `damageData` table stores specific health values:
+- `bodyDamage`: The health of the vehicle body (0-1000).
+- `engineDamage`: The health of the engine (0-1000).
+- `fuel`: Current fuel level (0-100).
+- `deformation`: Visual deformation data. 
+
+<Note>
+  The `deformation` field is only available if the [VehicleDeformation](/scripts/persistance/plugins/vehicle-deformation) plugin is enabled.
+</Note>
+
+## Plugins
+
+### Vehicle Deformation
+We support the [VehicleDeformation](/scripts/persistance/plugins/vehicle-deformation) resource to sync vehicle deformation. Check the plugin page for more info.

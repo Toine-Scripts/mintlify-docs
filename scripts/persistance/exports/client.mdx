@@ -1,0 +1,125 @@
+---
+title: "Client"
+description: "Available client-side exports for interacting with the persistence system."
+icon: "code"
+---
+
+You can verify if the script is running by checking for the resource state:
+
+```lua
+if GetResourceState('ts-persistance') == 'started' then
+    -- Script is running
+end
+```
+
+## Warning
+
+
+### Networked Vehicles
+All vehicle entities must be networked in order to be persisted. If a non-networked vehicle is passed, the script will return `nil` or indicate failure.
+
+## Exports
+
+### IsVehiclePersistanceDisabled
+
+Check if persistence is disabled for a vehicle.
+
+```lua
+local isDisabled = exports['ts-persistance']:IsVehiclePersistanceDisabled(vehicle)
+```
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `vehicle` | `entity` | The vehicle entity to check. |
+
+**Returns:**
+- `boolean`: `true` if persistence is disabled, `false` otherwise.
+
+### SetVehiclePersistanceDisabled
+
+Enable or disable persistence for a vehicle.
+
+```lua
+exports['ts-persistance']:SetVehiclePersistanceDisabled(vehicle, state)
+```
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `vehicle` | `entity` | The vehicle entity to modify. |
+| `state` | `boolean` | `true` to disable persistence, `false` to enable it. |
+
+### CreateVehiclePersistance
+
+Manually create persistence data for a vehicle. This is usually handled automatically, but can be forced if needed.
+
+```lua
+local id = exports['ts-persistance']:CreateVehiclePersistance(vehicle)
+```
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `vehicle` | `entity` | The vehicle entity to persist. |
+
+**Returns:**
+- `string` | `nil`: The persistence ID if successful, `nil` otherwise.
+
+### UpdateVehiclePersistance
+
+Manually update the persistence data for a vehicle.
+
+```lua
+local success = exports['ts-persistance']:UpdateVehiclePersistance(vehicle)
+```
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `vehicle` | `entity` | The vehicle entity to update. |
+
+**Returns:**
+- `boolean` | `nil`: `true` if successful, `nil` otherwise.
+
+### GetVehiclePersistanceId
+
+Get the persistence ID of a vehicle.
+
+```lua
+local id = exports['ts-persistance']:GetVehiclePersistanceId(vehicle)
+```
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `vehicle` | `entity` | The vehicle entity. |
+
+**Returns:**
+- `string` | `nil`: The persistence ID if found, `nil` otherwise.
+
+### GetVehiclePersistanceData
+
+Get the full persistence data for a vehicle.
+
+```lua
+local data = exports['ts-persistance']:GetVehiclePersistanceData(vehicle)
+```
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `vehicle` | `entity` | The vehicle entity. |
+
+**Returns:**
+- `table` | `nil`: The vehicle data table if found, `nil` otherwise.
+
+The returned table contains information such as:
+- `netId`: Network ID
+- `plate`: Vehicle plate
+- `coords`: Position
+- `hash`: Model hash
+- `model`: Model name
+- `props`: Vehicle properties (mods, colors)
+- `trailer`: Trailer data
+- `doorStatus`: Door locks
+- `damageData`: Health and fuel
+- `deformation`: Visual deformation (if plugin enabled)
+
+<Info>
+  You can find the detailed breakdown of the returned data structure in the [Data Structure](/scripts/persistance/data-structure) page.
+</Info>

@@ -1,0 +1,49 @@
+---
+title: "Installation"
+description: "How to install and configure the script."
+icon: "download"
+---
+
+## 1. Requirements
+
+This script relies on the following dependencies. Make sure they are installed **before** running the resource:
+
+- **[ox_lib](https://github.com/communityox/ox_lib/releases)**  
+  Installation guide: [https://coxdocs.dev/ox_lib](https://coxdocs.dev/ox_lib)
+
+- **[oxmysql](https://github.com/communityox/oxmysql/releases)**  
+  Installation guide: [https://coxdocs.dev/oxmysql](https://coxdocs.dev/oxmysql)
+
+> Overextended resources are now maintained under the Community Ox organization. You can find their documentation [here](https://coxdocs.dev/).
+
+---
+
+## 2. Framework Support
+
+A framework is required for this script to function. The following frameworks are supported:
+
+- **[QBCore](https://github.com/qbcore-framework/qb-core)**
+- **[QBox](https://github.com/Qbox-project/qbox-core)**
+- **[ESX](https://github.com/esx-framework/esx_core)**
+- **Custom framework** (manual integration required) See [Custom Framework](/scripts/persistance/custom-framework).
+
+You must define the framework you are using in the `config.lua` file.
+
+```lua shared/config.lua
+Config.Framework = "qb" -- "qb", "esx", "custom"
+```
+
+## 3. Installation
+
+1. Add the script to your `resources` folder.
+2. Add `ensure persistance` to your `server.cfg`.
+
+
+```js server.cfg
+ensure <your_framework>
+
+ensure ox_lib
+ensure oxmysql
+
+ensure ts-persistance // [!code ++] You need to add this line
+```
