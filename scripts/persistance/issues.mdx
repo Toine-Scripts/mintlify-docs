@@ -1,0 +1,47 @@
+---
+title: "Troubleshooting"
+description: "Common issues and how to resolve them."
+icon: "warning"
+---
+
+## Common Issues
+
+### Vehicles are locked unexpectedly
+This issue is typically caused by external scripts that manage vehicle locking (such as key systems or NPC traffic scripts) which automatically lock vehicles upon spawning.
+
+#### Example: qb-vehiclekeys
+By default, `qb-vehiclekeys` locks all vehicles that are not owned by the player. To ensure compatibility, update your configuration as follows:
+
+```lua qb-vehiclekeys/config.lua
+Config.LockNPCParkedCars = false
+Config.LockNPCDrivingCars = false
+```
+
+## Performance & Optimization
+
+### Database (DB) Performance Issues
+
+If you are experiencing database performance issues, you can disable the real-time DB sync in your configuration.
+
+```lua config.lua
+Config.Server.realTimeDBSync = false
+```
+
+<Warning>
+**Trade-off Analysis:**
+
+*   **Enabled (true):** Maximum data safety. In case of a server crash, no data is lost.
+*   **Disabled (false):** Better performance and lower resource usage. Recommended for servers with high player counts. You will only lose data up to your last auto-save interval if a crash occurs.
+</Warning>
+
+<Card title="✋ Toine's personal advice">
+  My personal advice is to **disable** the real-time DB sync at any player count. It can significantly impact performance, and the risk of data loss is minimal with the auto-save interval.
+</Card>
+
+## Upcoming Fixes
+
+I am currently developing a standalone, lightweight script to handle vehicle locking specifically at spawn. It will be released for free very soon.
+
+<Note>
+Stay tuned for updates or get support by joining our [Discord community](https://store.toine.me/discord).
+</Note>

@@ -1,0 +1,85 @@
+---
+title: "Configuration"
+description: "Detailed explanation of the configuration options for ts-persistance."
+icon: "gear"
+---
+
+The configuration file is located at `shared/config.lua`. This page provides a line-by-line explanation of each setting.
+
+## General Settings
+
+<ResponseField name="Config.Framework" type="string">
+  The framework you are using. Currently supports `"qb"` or `"esx"` or `"standalone"`. For standalone, you need to add your own bridge to the script. More info at [Standalone Bridge](/scripts/persistance/standalone-bridge).
+</ResponseField>
+
+## Bridge Settings
+
+<ResponseField name="Config.Bridge.VehicleDeformation" type="boolean">
+  If set to `true`, the script will sync visual vehicle deformation using the [VehicleDeformation](https://github.com/Kiminaze/VehicleDeformation/) plugin. More info [here](/scripts/persistance/plugins/vehicle-deformation).
+</ResponseField>
+
+## Global Settings
+
+<ResponseField name="Config.Global.trailerActive" type="boolean">
+  When enabled, any trailer attached to a vehicle will also be saved and restored when the main vehicle spawns.
+</ResponseField>
+
+## Client Settings
+
+<ResponseField name="Config.Client.debug" type="boolean">
+  Enables or disables client-side debug prints in the F8 console.
+</ResponseField>
+
+<ResponseField name="Config.Client.fuel.Get" type="function">
+  Function used to retrieve the current fuel level of a vehicle. By default, it uses the native `GetVehicleFuelLevel`.
+</ResponseField>
+
+<ResponseField name="Config.Client.spawnRadius" type="number">
+  The distance (in units) at which a persisted vehicle will start to spawn when a player approaches. If the vehicle was not already spawned.
+</ResponseField>
+
+<ResponseField name="Config.Client.spawnTimeout" type="number">
+  The maximum time (in ms) the client will wait for the vehicle entity to exist after the server triggers the spawn.
+</ResponseField>
+
+<ResponseField name="Config.Client.netWorkControlTimeout" type="number">
+  The maximum time (in ms) the client will wait to gain network control of the spawned vehicle before giving up.
+</ResponseField>
+
+<ResponseField name="Config.Client.propsApplyTryCount" type="number">
+  Number of attempts to re-apply vehicle properties (mods, colors) if a mismatch is detected after spawning. Default is 2.
+</ResponseField>
+
+<ResponseField name="Config.Client.setFuel" type="function">
+  Function called to apply fuel level to a vehicle. Custom fuel scripts (like LegacyFuel) can be integrated here.
+</ResponseField>
+
+<ResponseField name="Config.Client.setVehicleDoorStatusLocked" type="function">
+  Handles local door locking. It receives the raw GTA lock status (1 = unlocked, 2 = locked, etc.). See more at [FiveM Natives](https://docs.fivem.net/natives/?_0xD72CEF2).
+</ResponseField>
+
+<ResponseField name="Config.Client.DisableSpawning" type="function">
+  A function that returns `true` or `false`. If it returns `true`, no vehicles will spawn for that player (useful for Cinematics or certain player states).
+</ResponseField>
+
+## Server Settings
+
+<ResponseField name="Config.Server.debug" type="boolean">
+  Enables or disables server-side debug prints in the console.
+</ResponseField>
+
+<ResponseField name="Config.Server.realTimeDBSync" type="boolean">
+  <Warning>
+    **Important Performance Note:**
+    - **true**: Saves every change to the database immediately. High data safety but high resource usage.
+    - **false**: (Recommended) Syncs data in memory and relies on auto-save intervals. Much better for server performance.
+  </Warning>
+</ResponseField>
+
+<ResponseField name="Config.Server.afterSpawn" type="function">
+  A callback function triggered on the server immediately after a vehicle is created. Useful for custom scripts that need to modify the vehicle after spawning. 
+</ResponseField>
+
+<ResponseField name="Config.Server.setVehicleDoorStatusLocked" type="function">
+  Handles server-side locking and synchronization with key systems (like `qb-vehiclekeys`). It sets the `isLocked` state bag for synchronization.
+</ResponseField>
