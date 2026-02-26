@@ -4,4 +4,117 @@ description: "Available server-side exports for interacting with the persistence
 icon: "server"
 ---
 
-Currently, there are no server-side exports available.
+You can verify if the script is running by checking for the resource state:
+
+```lua
+if GetResourceState('ts-persistence') == 'started' then
+    -- Script is running
+end
+```
+
+## Exports
+
+### DeleteVehicleEntity
+
+Deletes the vehicle entity from the game world, but keeps its data in the database.
+
+```lua
+exports['ts-persistence']:DeleteVehicleEntity(vehicleId)
+```
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `vehicleId` | `string` | The unique persistence ID of the vehicle. |
+
+### GetAllVehicles
+
+Get a list of all vehicles currently loaded by the persistence system.
+
+```lua
+local vehicles = exports['ts-persistence']:GetAllVehicles()
+```
+
+**Returns:**
+- `table`: A dictionary of all active vehicles.
+
+### DoesVehicleExistInDb
+
+Check if a vehicle exists in the database.
+
+```lua
+local exists = exports['ts-persistence']:DoesVehicleExistInDb(vehicleId)
+```
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `vehicleId` | `string` | The persistence ID of the vehicle. |
+
+**Returns:**
+- `boolean`: `true` if it exists, `false` otherwise.
+
+### Reload
+
+Reload all vehicles from the database and refresh the system.
+
+```lua
+exports['ts-persistence']:Reload()
+```
+
+### UpdateVehiclePos
+
+Update the position of a persistent vehicle in memory.
+
+```lua
+exports['ts-persistence']:UpdateVehiclePos(vehicleId, coords, heading)
+```
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `vehicleId` | `string` | The persistence ID of the vehicle. |
+| `coords` | `vector3` | The new coordinates. |
+| `heading` | `number` | The new heading. |
+
+### UnloadAllVehicles
+
+Deletes all persistent vehicle entities from the game world (does not remove their data from the database).
+
+```lua
+exports['ts-persistence']:UnloadAllVehicles()
+```
+
+### SetVehicleDeleteAt
+
+Set a Unix timestamp for when the vehicle should be automatically deleted from the database.
+
+```lua
+exports['ts-persistence']:SetVehicleDeleteAt(vehicleId, timeTimestamp)
+```
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `vehicleId` | `string` | The persistence ID of the vehicle. |
+| `timeTimestamp` | `number` | The Unix timestamp for deletion. |
+
+### DeleteVehicleFromDB
+
+Delete a vehicle from the persistence database using its ID.
+
+```lua
+exports['ts-persistence']:DeleteVehicleFromDB(vehicleId)
+```
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `vehicleId` | `string` | The persistence ID of the vehicle to delete. |
+
+### DeleteVehicleFromDBByPlate
+
+Delete a vehicle from the persistence database using its plate.
+
+```lua
+exports['ts-persistence']:DeleteVehicleFromDBByPlate(plate)
+```
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `plate` | `string` | The plate of the vehicle to delete from the database. |

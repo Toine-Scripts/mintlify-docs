@@ -12,6 +12,15 @@ The configuration file is located at `shared/config.lua`. This page provides a l
   The framework you are using. Currently supports `"qb"` or `"esx"` or `"standalone"`. For standalone, you need to add your own bridge to the script. More info at [Standalone Bridge](/scripts/persistance/standalone-bridge).
 </ResponseField>
 
+<ResponseField name="Config.KeysSystem" type="string">
+  The vehicle keys script you are using. Currently supported: `"qb-vehiclekeys"`, `"jaksam-vehicles-keys"`, `"qs-vehiclekeys"`, `"t1ger_keys"`, `"wasabi_carlock"`, `"standalone"`. For standalone, you need to configure `bridge/keys/standalone`.
+</ResponseField>
+
+<ResponseField name="Config.Garage" type="string">
+  The garage system you are using. Currently supported: `"qb-garages"`, `"esx_garage"`, `"jg-advancedgarages"`, `"vms_garagesv2"`, `"standalone"`. For standalone, you need to configure `bridge/garage/standalone`.
+</ResponseField>
+
+
 ## Bridge Settings
 
 <ResponseField name="Config.Bridge.VehicleDeformation" type="boolean">

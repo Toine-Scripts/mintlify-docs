@@ -1,0 +1,67 @@
+---
+title: "Examples"
+description: "Examples of how to integrate ts-persistence into other scripts."
+icon: "code"
+---
+
+When a vehicle is deleted by an admin command or stored in a garage, you may need to remove it from persistence so it doesn't respawn later.
+Here are a few examples of how to accomplish this using the `ForgetVehiclePersistence` export.
+
+## QBCore Delete Vehicle Command (`/dv`)
+
+When you delete a vehicle manually using a command, you should remove it from the database so it stops being persistent.
+
+```lua resources/[qb]/qb-core/client/events.lua
+RegisterNetEvent('QBCore:Command:DeleteVehicle', function()
+    local ped = PlayerPedId()
+    local veh = GetVehiclePedIsUsing(ped)
+    if veh ~= 0 then
+        -- Add this line to forget the vehicle
+        exports['ts-persistence']:ForgetVehiclePersistence(nil, QBCore.Functions.GetPlate(veh))
+        
+        SetEntityAsMissionEntity(veh, true, true)
+        DeleteVehicle(veh)
+    else
+        local pcoords = GetEntityCoords(ped)
+        local vehicles = GetGamePool('CVehicle')
+        for _, v in pairs(vehicles) do
+            if #(pcoords - GetEntityCoords(v)) <= 5.0 then
+                -- Add this line to forget the vehicle
+                exports['ts-persistence']:ForgetVehiclePersistence(nil, QBCore.Functions.GetPlate(v))
+                
+                SetEntityAsMissionEntity(v, true, true)
+                DeleteVehicle(v)
+            end
+        end
+    end
+end)
+```
+
+## Adding to a Garage System
+If you are adding this script to your server, you will need to add the export when a vehicle is successfully stored in the garage so that it stops being persistent. 
+
+Here is an example for how it looks on the default `qb-garages` script when a vehicle gets deposited:
+
+```lua resources/[qb]/qb-garages/client/main.lua
+local function DepositVehicle(veh, data)
+    local plate = QBCore.Functions.GetPlate(veh)
+    QBCore.Functions.TriggerCallback('qb-garages:server:canDeposit', function(canDeposit)
+        if canDeposit then
+            local bodyDamage = math.ceil(GetVehicleBodyHealth(veh))
+            local engineDamage = math.ceil(GetVehicleEngineHealth(veh))
+            local totalFuel = exports[Config.FuelResource]:GetFuel(veh)
+            TriggerServerEvent('qb-mechanicjob:server:SaveVehicleProps', QBCore.Functions.GetVehicleProperties(veh))
+            TriggerServerEvent('qb-garages:server:updateVehicleStats', plate, totalFuel, engineDamage, bodyDamage)
+            
+            -- Add this line to forget the vehicle from persistence
+            exports['ts-persistence']:ForgetVehiclePersistence(nil, plate)
+            
+            CheckPlayers(veh)
+            if plate then TriggerServerEvent('qb-garages:server:UpdateOutsideVehicle', plate, nil) end
+            QBCore.Functions.Notify(Lang:t('success.vehicle_parked'), 'primary', 4500)
+        else
+            QBCore.Functions.Notify(Lang:t('error.not_owned'), 'error', 3500)
+        end
+    end, plate, data.type, data.indexgarage, 1)
+end
+```

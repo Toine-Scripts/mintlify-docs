@@ -44,6 +44,7 @@
                     ]
                   },
                   "scripts/persistance/data-structure",
+                  "scripts/persistance/examples",
                   {
                     "group": "Plugins",
                     "pages": [

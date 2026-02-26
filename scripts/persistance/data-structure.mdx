@@ -13,6 +13,8 @@ This is how the script sees the data of a vehicle. This data is what is returned
     coords = vector3(0.0, 0.0, 0.0), -- Current coordinates
     hash = 123456789, -- Model hash
     model = "adder", -- Model name
+    isTemp = false, -- Whether the vehicle is temporary and should be deleted after a restart
+    deleteAt = 1678886400, -- Unix timestamp for when the vehicle should be deleted (optional)
     props = { ... }, -- Vehicle properties (mods, colors, etc.) from ox_lib
     trailer = { -- Trailer data if attached
         netId = 456,
@@ -45,6 +47,14 @@ The `damageData` table stores specific health values:
 <Note>
   The `deformation` field is only available if the [VehicleDeformation](/scripts/persistance/plugins/vehicle-deformation) plugin is enabled.
 </Note>
+
+## Temporary Vehicles
+
+Vehicles can be marked as temporary, meaning they will not persist permanently.
+
+- `isTemp`: If `true`, the vehicle is temporary and will be deleted from the database under certain conditions (like server restarts or time limits).
+- `deleteAt`: An optional Unix timestamp (in seconds) representing when the vehicle is scheduled for automatic permanent deletion.
+
 
 ## Plugins
 

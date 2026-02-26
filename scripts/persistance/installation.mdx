@@ -27,10 +27,12 @@ A framework is required for this script to function. The following frameworks ar
 - **[ESX](https://github.com/esx-framework/esx_core)**
 - **Custom framework** (manual integration required) See [Custom Framework](/scripts/persistance/custom-framework).
 
-You must define the framework you are using in the `config.lua` file.
+You must define the framework you are using in the `config.lua` file, along with the garage and keys system you use.
 
 ```lua shared/config.lua
-Config.Framework = "qb" -- "qb", "esx", "custom"
+Config.Framework = "qb" -- "qb", "qbox", "esx", "standalone"
+Config.KeysSystem = 'qb-vehiclekeys' -- "qb-vehiclekeys", "qs-vehiclekeys", "standalone"
+Config.Garage = 'qb-garages' -- "qb-garages", "esx_garage", "jg-advancedgarages", "vms_garagesv2", "standalone"
 ```
 
 ## 3. Installation
