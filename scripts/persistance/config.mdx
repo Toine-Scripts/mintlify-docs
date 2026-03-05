@@ -9,11 +9,11 @@ The configuration file is located at `shared/config.lua`. This page provides a l
 ## General Settings
 
 <ResponseField name="Config.Framework" type="string">
-  The framework you are using. Currently supports `"qb"` or `"esx"` or `"standalone"`. For standalone, you need to add your own bridge to the script. More info at [Standalone Bridge](/scripts/persistance/standalone-bridge).
+  The framework you are using. Currently supports `"qb"` or `"qbx"` or `"esx"` or `"standalone"`. For standalone, you need to add your own bridge to the script. More info at [Standalone Bridge](/scripts/persistance/standalone-bridge).
 </ResponseField>
 
 <ResponseField name="Config.KeysSystem" type="string">
-  The vehicle keys script you are using. Currently supported: `"qb-vehiclekeys"`, `"jaksam-vehicles-keys"`, `"qs-vehiclekeys"`, `"t1ger_keys"`, `"wasabi_carlock"`, `"standalone"`. For standalone, you need to configure `bridge/keys/standalone`.
+  The vehicle keys script you are using. Currently supported: `"qb-vehiclekeys"`, `"qs-vehiclekeys"`, `"standalone"`. For standalone, you need to configure `bridge/keys/standalone`.
 </ResponseField>
 
 <ResponseField name="Config.Garage" type="string">
@@ -23,19 +23,23 @@ The configuration file is located at `shared/config.lua`. This page provides a l
 
 ## Bridge Settings
 
-<ResponseField name="Config.Bridge.VehicleDeformation" type="boolean">
+<ResponseField name="Config.Bridge.VehicleDeformation" type="boolean" default="false">
   If set to `true`, the script will sync visual vehicle deformation using the [VehicleDeformation](https://github.com/Kiminaze/VehicleDeformation/) plugin. More info [here](/scripts/persistance/plugins/vehicle-deformation).
 </ResponseField>
 
 ## Global Settings
 
-<ResponseField name="Config.Global.trailerActive" type="boolean">
+<ResponseField name="Config.Global.trailerActive" type="boolean" default="true">
   When enabled, any trailer attached to a vehicle will also be saved and restored when the main vehicle spawns.
+</ResponseField>
+
+<ResponseField name="Config.Global.disableTemporaryVehicles" type="boolean" default="false">
+  When enabled, all vehicles will be permanent. This means that vehicles will not be deleted after a reboot or script restart.
 </ResponseField>
 
 ## Client Settings
 
-<ResponseField name="Config.Client.debug" type="boolean">
+<ResponseField name="Config.Client.debug" type="boolean" default="false">
   Enables or disables client-side debug prints in the F8 console.
 </ResponseField>
 
@@ -43,20 +47,20 @@ The configuration file is located at `shared/config.lua`. This page provides a l
   Function used to retrieve the current fuel level of a vehicle. By default, it uses the native `GetVehicleFuelLevel`.
 </ResponseField>
 
-<ResponseField name="Config.Client.spawnRadius" type="number">
+<ResponseField name="Config.Client.spawnRadius" type="number" default="200">
   The distance (in units) at which a persisted vehicle will start to spawn when a player approaches. If the vehicle was not already spawned.
 </ResponseField>
 
-<ResponseField name="Config.Client.spawnTimeout" type="number">
-  The maximum time (in ms) the client will wait for the vehicle entity to exist after the server triggers the spawn.
+<ResponseField name="Config.Client.spawnTimeout" type="number" default="100">
+  The maximum time (in ms) the client will wait for the vehicle entity to exist after the server triggers the spawn. Do not change this value unless you know what you are doing.
 </ResponseField>
 
-<ResponseField name="Config.Client.netWorkControlTimeout" type="number">
-  The maximum time (in ms) the client will wait to gain network control of the spawned vehicle before giving up.
+<ResponseField name="Config.Client.netWorkControlTimeout" type="number" default="100">
+  The maximum time (in ms) the client will wait to gain network control of the spawned vehicle before giving up. Do not change this value unless you know what you are doing.
 </ResponseField>
 
-<ResponseField name="Config.Client.propsApplyTryCount" type="number">
-  Number of attempts to re-apply vehicle properties (mods, colors) if a mismatch is detected after spawning. Default is 2.
+<ResponseField name="Config.Client.propsApplyTryCount" type="number" default="2">
+  Number of attempts to re-apply vehicle properties (mods, colors) if a mismatch is detected after spawning. Default is 2. Do not change this value unless you know what you are doing.
 </ResponseField>
 
 <ResponseField name="Config.Client.setFuel" type="function">
@@ -83,6 +87,35 @@ The configuration file is located at `shared/config.lua`. This page provides a l
     - **true**: Saves every change to the database immediately. High data safety but high resource usage.
     - **false**: (Recommended) Syncs data in memory and relies on auto-save intervals. Much better for server performance.
   </Warning>
+  Check at for more infos : [Database DB Performance Issues](/scripts/persistance/issues#database-db-performance-issues)
+</ResponseField>
+
+<ResponseField name="Config.Server.autoSaveActive" type="boolean" default="true">
+  Enables or disables the auto-save feature. When enabled, vehicles are automatically saved to the database at specified intervals.
+</ResponseField>
+
+<ResponseField name="Config.Server.autoSaveInterval" type="number" default="5">
+  The interval (in minutes) at which vehicles are automatically saved to the database. Only applicable when `Config.Server.autoSaveActive` is `true`.
+</ResponseField>
+
+<ResponseField name="Config.Server.timeToDeleteActive" type="boolean" default="true">
+  Enables or disables the time-based deletion feature. When enabled, vehicles can be automatically deleted based on their age and type.
+</ResponseField>
+
+<ResponseField name="Config.Server.timeToDeleteTemp" type="number" default="2">
+  The age (in hours) at which temporary vehicles are automatically deleted. Set to `false` to disable deletion of temporary vehicles. Only applicable when `Config.Server.timeToDeleteActive` is `true`.
+</ResponseField>
+
+<ResponseField name="Config.Server.timeToDeletePerm" type="number" default="false">
+  The age (in hours) at which permanent vehicles are automatically deleted. Set to `false` to disable deletion of permanent vehicles. Only applicable when `Config.Server.timeToDeleteActive` is `true`.
+</ResponseField>
+
+<ResponseField name="Config.Server.timeToDeleteCheckInterval" type="number" default="5">
+  The interval (in minutes) at which the script checks for vehicles that should be deleted. Only applicable when `Config.Server.timeToDeleteActive` is `true`.
+</ResponseField>
+
+<ResponseField name="Config.Server.setVehicleOutsideStateOnStart" type="boolean" default="true">
+  If `true`, vehicles will be set to the "outside" state when they are spawned by persistence. This ensures they behave correctly in the game world.
 </ResponseField>
 
 <ResponseField name="Config.Server.afterSpawn" type="function">
@@ -91,4 +124,24 @@ The configuration file is located at `shared/config.lua`. This page provides a l
 
 <ResponseField name="Config.Server.setVehicleDoorStatusLocked" type="function">
   Handles server-side locking and synchronization with key systems (like `qb-vehiclekeys`). It sets the `isLocked` state bag for synchronization.
+</ResponseField>
+
+<ResponseField name="Config.Server.notifyPlayer" type="function">
+  A callback function used to display notifications to players. It receives the player's source, a message string, and an optional type (e.g., 'success', 'error').
+</ResponseField>
+
+<ResponseField name="Config.Server.permissions" type="object">
+  Configuration for permission checks for various commands.
+  
+  <ResponseField name="reload" type="function">
+    Permission check for the `/persistence reload` command. By default, it uses the framework's bridge permission system or falls back to an ACE check.
+  </ResponseField>
+  
+  <ResponseField name="bringVehicle" type="function">
+    Permission check for the `/bringvehicle` command. By default, it uses the framework's bridge permission system or falls back to an ACE check.
+  </ResponseField>
+  
+  <ResponseField name="setVehicleTemp" type="function">
+    Permission check for the `/setvehicleasTemp` command. By default, it uses the framework's bridge permission system or falls back to an ACE check.
+  </ResponseField>
 </ResponseField>

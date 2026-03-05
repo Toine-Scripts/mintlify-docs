@@ -47,12 +47,12 @@ exports['ts-persistence']:SetVehiclePersistenceDisabled(vehicle, state)
 | `vehicle` | `entity` | The vehicle entity to modify. |
 | `state` | `boolean` | `true` to disable persistence, `false` to enable it. |
 
-### CreateVehiclePersistence
+### CreateVehicle
 
 Manually create persistence data for a vehicle. This is usually handled automatically, but can be forced if needed.
 
 ```lua
-local id = exports['ts-persistence']:CreateVehiclePersistence(vehicle)
+local id = exports['ts-persistence']:CreateVehicle(vehicle)
 ```
 
 | Argument | Type | Description |
@@ -62,12 +62,12 @@ local id = exports['ts-persistence']:CreateVehiclePersistence(vehicle)
 **Returns:**
 - `string` \| `nil`: The persistence ID if successful, `nil` otherwise.
 
-### UpdateVehiclePersistence
+### UpdateVehicle
 
 Manually update the persistence data for a vehicle.
 
 ```lua
-local success = exports['ts-persistence']:UpdateVehiclePersistence(vehicle)
+local success = exports['ts-persistence']:UpdateVehicle(vehicle)
 ```
 
 | Argument | Type | Description |
@@ -123,12 +123,12 @@ The returned table contains information such as:
   You can find the detailed breakdown of the returned data structure in the [Data Structure](/scripts/persistance/data-structure) page.
 </Info>
 
-### ForgetVehiclePersistence
+### ForgetVehicle
 
 Forget the persistence entry for a vehicle, completely removing it from the persistent system and the database.
 
 ```lua
-local success = exports['ts-persistence']:ForgetVehiclePersistence(vehicleId, plate)
+local success = exports['ts-persistence']:ForgetVehicle(vehicleId, plate)
 ```
 
 | Argument | Type | Description |

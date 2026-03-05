@@ -118,3 +118,19 @@ exports['ts-persistence']:DeleteVehicleFromDBByPlate(plate)
 | Argument | Type | Description |
 | :--- | :--- | :--- |
 | `plate` | `string` | The plate of the vehicle to delete from the database. |
+
+### ForgetVehicle
+
+Forget the persistence entry for a vehicle, completely removing it from the persistent system and the database.
+
+```lua
+local success = exports['ts-persistence']:ForgetVehicle(vehicleId, plate)
+```
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `vehicleId` | `string` \| `nil` | The persistence ID of the vehicle (optional if plate is provided). |
+| `plate`     | `string` \| `nil` | The plate of the vehicle (optional if vehicleId is provided). |
+
+**Returns:**
+- `boolean`: `true` if successful, `false` otherwise.
