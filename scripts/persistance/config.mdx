@@ -6,19 +6,9 @@ icon: "gear"
 
 The configuration file is located at `shared/config.lua`. This page provides a line-by-line explanation of each setting.
 
-## General Settings
-
-<ResponseField name="Config.Framework" type="string">
-  The framework you are using. Currently supports `"qb"` or `"qbx"` or `"esx"` or `"standalone"`. For standalone, you need to add your own bridge to the script. More info at [Standalone Bridge](/scripts/persistance/standalone-bridge).
-</ResponseField>
-
-<ResponseField name="Config.KeysSystem" type="string">
-  The vehicle keys script you are using. Currently supported: `"qb-vehiclekeys"`, `"qs-vehiclekeys"`, `"standalone"`. For standalone, you need to configure `bridge/keys/standalone`.
-</ResponseField>
-
-<ResponseField name="Config.Garage" type="string">
-  The garage system you are using. Currently supported: `"qb-garages"`, `"esx_garage"`, `"jg-advancedgarages"`, `"vms_garagesv2"`, `"standalone"`. For standalone, you need to configure `bridge/garage/standalone`.
-</ResponseField>
+> [!NOTE]
+> Are you looking for **Framework**, **Garage**, or **Keys** settings? 
+> ts-persistence is fully independent! All bridges (QBCore, ESX, qs-vehiclekeys, qb-garages...) are now handled exclusively by `ts-lib`. You can set them in `ts-lib/shared/config.lua`.
 
 
 ## Bridge Settings

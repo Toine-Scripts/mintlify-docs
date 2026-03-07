@@ -32,6 +32,12 @@
             "group": "Scripts",
             "pages": [
               {
+                "group": "TS-Lib",
+                "pages": [
+                  "scripts/ts-lib/index"
+                ]
+              },
+              {
                 "group": "Persistence",
                 "pages": [
                   "scripts/persistance/index",

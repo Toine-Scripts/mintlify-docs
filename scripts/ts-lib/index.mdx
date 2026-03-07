@@ -1,0 +1,102 @@
+---
+title: 'TS-Lib'
+description: 'A comprehensive, universal utility wrapper and bridge library for FiveM.'
+icon: 'layer-group'
+---
+
+## Overview
+
+**TS-Lib** is designed to eliminate the headache of supporting multiple frameworks, inventories, garage systems, and key management scripts. Instead of cluttering your resources with endless `if/else` checks, `ts-lib` handles it all under one unified `TS` namespace. 
+
+It is designed to be injected dynamically into any script, keeping your resource code clean, fast, and completely independent.
+
+---
+
+<Card title="Download TS-Lib" icon="download" href="https://store.toine.me/download/ts-lib">
+    Get the latest version of the resource.
+</Card>
+
+---
+
+## Features
+
+- **Automated Framework Detection**: Natively supports `qb-core`, `qbx_core`, `es_extended`, and `standalone`. It prioritizes the most modern framework available automatically or via forced config.
+- **`ox_lib` Wrapper**: `ts-lib` acts as a complete proxy wrapper for `ox_lib`. Your scripts rely entirely on `TS.Lib` instead of directly calling `ox_lib`. If `ox_lib` isn't declared in your script's `fxmanifest`, `ts-lib` injects it dynamically.
+- **Unified Bridges**:
+  - **Garages**: Native support for `qb-garages`, `esx_garage`, `vms_garagesv2`, `jg-advancedgarages`, and `standalone`.
+  - **Keys**: Native support for `qb-vehiclekeys`, `qs-vehiclekeys`, and `standalone`.
+- **Centralized Utils**: Prints, debugs, and resource checks are completely centralized (`TS.Print`, `TS.DebugPrint`, `TS.ErrorPrint`).
+
+---
+
+## Installation
+
+Integrating `ts-lib` into your own scripts is incredibly simple. 
+
+1. Place the `ts-lib` folder in your `resources` directory.
+2. In the `fxmanifest.lua` of the script that needs to use `ts-lib`, add this single line to your `shared_scripts`:
+
+```lua
+shared_scripts {
+    '@ts-lib/imports.lua',
+    -- Your other shared scripts...
+}
+```
+
+That's it! `ts-lib` will automatically boot up, detect the server's framework, fetch the configurations, expose the `TS` namespace, and dynamically load the required modules.
+
+---
+
+## Configuration
+
+You can configure exactly which systems `ts-lib` uses via `ts-lib/shared/config.lua`.
+
+```lua
+TS.Config = {
+    debug = false,
+    
+    -- Supported: 'auto', 'qb-core', 'qbx_core', 'es_extended', 'standalone'
+    Framework = 'auto', 
+    
+    -- Supported: 'qb-garages', 'esx_garage', 'vms_garagesv2', 'jg-advancedgarages', 'standalone'
+    Garage = 'qb-garages', 
+    
+    -- Supported: 'qb-vehiclekeys', 'qs-vehiclekeys', 'standalone'
+    KeysSystem = 'qb-vehiclekeys', 
+}
+```
+
+---
+
+## API Reference
+
+Here are some examples of what is exposed to your resources once `ts-lib` is loaded:
+
+### Utilities
+- `TS.Print(message, resourceName)`
+- `TS.DebugPrint(message, resourceName)`
+- `TS.ErrorPrint(message, resourceName)`
+- `TS.SuccessPrint(message, resourceName)`
+- `TS.Utils.IsRessourceLoaded(resourceName)`
+- `TS.Utils.IsTableEmpty(tbl)`
+
+### ox_lib Wrappers 
+*These dynamically load from `ox_lib` to prevent hard dependency crashes.*
+
+**Client Side:**
+- `TS.Lib.Grid.AddEntry(data)`
+- `TS.Lib.Grid.RemoveEntry(id)`
+- `TS.Lib.Grid.GetNearbyEntries(coords, cb)`
+- `TS.Lib.OnCache(key, cb)`
+- `TS.Lib.Vehicle.GetProperties(vehicle)`
+- `TS.Lib.Vehicle.SetProperties(vehicle, props)`
+
+**Server Side:**
+- `TS.Lib.AddCommand(name, params, cb)`
+- `TS.Lib.Notify(source, title, description, type)`
+
+**Shared:**
+- `TS.Lib.Callback.Await(name, playerId, ...)`
+- `TS.Lib.Callback.Register(name, cb)`
+- `TS.Lib.SetInterval(cb, ms)`
+- `TS.Lib.ClearInterval(id)`
