@@ -5,7 +5,7 @@ icon: "code"
 ---
 
 When a vehicle is deleted by an admin command or stored in a garage, you may need to remove it from persistence so it doesn't respawn later.
-Here are a few examples of how to accomplish this using the `ForgetVehiclePersistence` export.
+Here are a few examples of how to accomplish this using the `ForgetVehicle` export.
 
 ## QBCore Delete Vehicle Command (`/dv`)
 
@@ -17,7 +17,7 @@ RegisterNetEvent('QBCore:Command:DeleteVehicle', function()
     local veh = GetVehiclePedIsUsing(ped)
     if veh ~= 0 then
         -- Add this line to forget the vehicle
-        exports['ts-persistence']:ForgetVehiclePersistence(nil, QBCore.Functions.GetPlate(veh))
+        exports['ts-persistence']:ForgetVehicle(nil, QBCore.Functions.GetPlate(veh))
         
         SetEntityAsMissionEntity(veh, true, true)
         DeleteVehicle(veh)
@@ -27,7 +27,7 @@ RegisterNetEvent('QBCore:Command:DeleteVehicle', function()
         for _, v in pairs(vehicles) do
             if #(pcoords - GetEntityCoords(v)) <= 5.0 then
                 -- Add this line to forget the vehicle
-                exports['ts-persistence']:ForgetVehiclePersistence(nil, QBCore.Functions.GetPlate(v))
+                exports['ts-persistence']:ForgetVehicle(nil, QBCore.Functions.GetPlate(v))
                 
                 SetEntityAsMissionEntity(v, true, true)
                 DeleteVehicle(v)
@@ -54,7 +54,7 @@ local function DepositVehicle(veh, data)
             TriggerServerEvent('qb-garages:server:updateVehicleStats', plate, totalFuel, engineDamage, bodyDamage)
             
             -- Add this line to forget the vehicle from persistence
-            exports['ts-persistence']:ForgetVehiclePersistence(nil, plate)
+            exports['ts-persistence']:ForgetVehicle(nil, plate)
             
             CheckPlayers(veh)
             if plate then TriggerServerEvent('qb-garages:server:UpdateOutsideVehicle', plate, nil) end

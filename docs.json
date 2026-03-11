@@ -34,7 +34,9 @@
               {
                 "group": "TS-Lib",
                 "pages": [
-                  "scripts/ts-lib/index"
+                  "scripts/ts-lib/index",
+                  "scripts/ts-lib/api-reference",
+                  "scripts/ts-lib/contributing"
                 ]
               },
               {
@@ -42,6 +44,9 @@
                 "pages": [
                   "scripts/persistance/index",
                   "scripts/persistance/installation",
+                  "scripts/persistance/config",
+                  "scripts/persistance/commands",
+                  "scripts/persistance/events",
                   {
                     "group": "Exports",
                     "pages": [
@@ -58,9 +63,9 @@
                       "scripts/persistance/plugins/vehicle-deformation"
                     ]
                   },
-                  "scripts/persistance/changelog",
-                  "scripts/persistance/config",
-                  "scripts/persistance/issues"
+                  "scripts/persistance/data-structure",
+                  "scripts/persistance/issues",
+                  "scripts/persistance/changelog"
                 ]
               }
             ]

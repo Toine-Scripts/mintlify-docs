@@ -1,0 +1,75 @@
+---
+title: "Contributing"
+description: "How to contribute to TS-Lib and its bridges."
+icon: "hands-holding-circle"
+---
+
+TS-Lib powers multiple Toine Scripts (like `ts-persistence`) and centralizes all framework / garage / keys integrations.  
+Community contributions are welcome, especially for **new bridges**, **bug fixes**, and **quality-of-life improvements**.
+
+## Before you start
+
+- **Check the docs**: Make sure what you want to add or change doesn't already exist.
+- **Keep resources independent**: TS-Lib's goal is to remove hard dependencies from individual scripts.
+- **Prefer configuration over forks**: If something can be solved via `ts-lib/shared/config.lua`, it's usually the right place.
+
+## Typical contribution ideas
+
+- Add support for a **new framework** (or a forked one).
+- Add a bridge for a new **garage** or **vehicle keys** system.
+- Improve **debug logs** or **error handling** in existing bridges.
+- Expose additional, generic helpers on `TS.Lib` that make sense across scripts.
+
+## Code style & architecture
+
+- **Single entrypoint**: TS-Lib is exposed through the global `TS` namespace.
+- **No script-specific logic**: Keep logic generic so multiple scripts can reuse it.
+- **Use bridges**:
+  - `TS.Bridge.Framework` for framework-related calls.
+  - `TS.Bridge.Garage` for garage-related calls.
+  - `TS.Bridge.Keys` for key systems.
+- **Respect existing patterns**:
+  - Use `TS.DebugPrint`, `TS.ErrorPrint`, `TS.SuccessPrint` for logging.
+  - Avoid direct `ox_lib` usage from scripts, prefer `TS.Lib.*`.
+
+## Contribution workflow
+
+TS-Lib is hosted on GitHub and accepts **direct pull requests**.
+
+1. **Fork** the TS-Lib repository on GitHub.
+2. **Create a feature branch** that clearly describes your change (for example `feat/new-garage-bridge` or `fix/qb-vehiclekeys-nil-check`).
+3. Implement your changes:
+   - Keep them focused and as small as possible.
+   - Add or update docs (this site) when you add new configuration options or bridges.
+4. **Open a pull request**:
+   - Clearly describe the problem and your solution.
+   - Mention the frameworks / external resources involved.
+   - Add any reference code or examples that help validate the change.
+5. Once reviewed and approved, your changes will be merged and included in the next TS-Lib release.
+
+If you’re unsure whether an idea fits TS-Lib, you can always start by opening a discussion or contacting support on [Discord](https://store.toine.me/discord).
+
+## Adding a new bridge (high level)
+
+To add support for a new garage / keys / framework:
+
+1. Extend `ts-lib/shared/config.lua` with a new option (e.g. `Garage = 'my-garage'`).
+2. Implement the corresponding bridge functions:
+   - For a garage: `TS.Bridge.Garage.IsVehicleOwned`, `TS.Bridge.Garage.SetVehicleOutsideState`, etc.
+   - For keys: `TS.Bridge.Keys.SetDoorStatus`, `TS.Bridge.Keys.GiveKeys`, etc. (depending on what TS-Lib already uses).
+3. Make sure:
+   - All calls **fail gracefully** if the target resource is missing.
+   - You use `TS.Utils.IsRessourceLoaded` before relying on another resource.
+4. Add or update docs to mention the new option under **Configuration**.
+
+## Reporting bugs & requesting features
+
+- **Bugs**: Provide as much detail as possible
+  - Server type (Linux/Windows), framework, and main scripts used.
+  - Exact error messages (from server console or F8).
+  - Steps to reproduce and, if possible, a small repro script.
+- **Feature requests**: Explain the use case, not just the desired API.  
+  Often the best solution is a more generic helper that works for several scripts.
+
+You can report both via the [Discord](https://store.toine.me/discord).
+

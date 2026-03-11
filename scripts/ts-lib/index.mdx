@@ -10,11 +10,14 @@ icon: 'layer-group'
 
 It is designed to be injected dynamically into any script, keeping your resource code clean, fast, and completely independent.
 
----
-
-<Card title="Download TS-Lib" icon="download" href="https://store.toine.me/download/ts-lib">
-    Get the latest version of the resource.
-</Card>
+<CardGroup cols={2}>
+  <Card title="Download TS-Lib" icon="download" href="https://store.toine.me/download/ts-lib">
+      Get the latest version of the resource.
+  </Card>
+  <Card title="Contribute to TS-Lib" icon="hands-holding-circle" href="/scripts/ts-lib/contributing">
+      Learn how to propose bridges, fixes and improvements.
+  </Card>
+</CardGroup>
 
 ---
 
@@ -70,33 +73,4 @@ TS.Config = {
 
 ## API Reference
 
-Here are some examples of what is exposed to your resources once `ts-lib` is loaded:
-
-### Utilities
-- `TS.Print(message, resourceName)`
-- `TS.DebugPrint(message, resourceName)`
-- `TS.ErrorPrint(message, resourceName)`
-- `TS.SuccessPrint(message, resourceName)`
-- `TS.Utils.IsRessourceLoaded(resourceName)`
-- `TS.Utils.IsTableEmpty(tbl)`
-
-### ox_lib Wrappers 
-*These dynamically load from `ox_lib` to prevent hard dependency crashes.*
-
-**Client Side:**
-- `TS.Lib.Grid.AddEntry(data)`
-- `TS.Lib.Grid.RemoveEntry(id)`
-- `TS.Lib.Grid.GetNearbyEntries(coords, cb)`
-- `TS.Lib.OnCache(key, cb)`
-- `TS.Lib.Vehicle.GetProperties(vehicle)`
-- `TS.Lib.Vehicle.SetProperties(vehicle, props)`
-
-**Server Side:**
-- `TS.Lib.AddCommand(name, params, cb)`
-- `TS.Lib.Notify(source, title, description, type)`
-
-**Shared:**
-- `TS.Lib.Callback.Await(name, playerId, ...)`
-- `TS.Lib.Callback.Register(name, cb)`
-- `TS.Lib.SetInterval(cb, ms)`
-- `TS.Lib.ClearInterval(id)`
+For a detailed, function-by-function description of the TS-Lib surface (`TS`, `TS.Lib`, and bridges), see the dedicated [API Reference](/scripts/ts-lib/api-reference) page.

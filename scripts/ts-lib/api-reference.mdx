@@ -1,0 +1,144 @@
+---
+title: "API Reference"
+description: "Detailed TS-Lib API: TS, TS.Lib, and bridges."
+icon: "book"
+---
+
+This page lists the main functions exposed by **TS-Lib** once you include `@ts-lib/imports.lua` in your resource.
+
+All examples assume that the global `TS` namespace is available.
+
+---
+
+## Core utilities
+
+### Printing helpers
+
+- `TS.Print(message, resourceName?)`
+- `TS.DebugPrint(message, resourceName?)`
+- `TS.ErrorPrint(message, resourceName?)`
+- `TS.SuccessPrint(message, resourceName?)`
+
+**Example**
+
+```lua
+TS.DebugPrint('My script has started', GetCurrentResourceName())
+```
+
+### Utils
+
+- `TS.Utils.IsRessourceLoaded(resourceName): boolean`
+- `TS.Utils.IsTableEmpty(tbl): boolean`
+
+**Example**
+
+```lua
+if not TS.Utils.IsRessourceLoaded('ox_lib') then
+    TS.ErrorPrint('ox_lib is missing, some features may not work')
+end
+```
+
+---
+
+## TS.Lib (ox_lib wrapper)
+
+These helpers proxy `ox_lib` and are safe to use even if your own resource does not declare `ox_lib` in its `fxmanifest`.
+
+### Client-side
+
+- `TS.Lib.Grid.AddEntry(entry)`
+- `TS.Lib.Grid.RemoveEntry(entry)`
+- `TS.Lib.Grid.GetNearbyEntries(coords, filterCb?)`
+- `TS.Lib.OnCache(key, cb)`
+- `TS.Lib.Vehicle.GetProperties(vehicle)`
+- `TS.Lib.Vehicle.SetProperties(vehicle, props)`
+
+**Example**
+
+```lua
+TS.Lib.OnCache('vehicle', function(veh, oldVeh)
+    if veh then
+        TS.DebugPrint('Player entered a vehicle')
+    end
+end)
+```
+
+### Server-side
+
+- `TS.Lib.AddCommand(name, params, cb)`
+- `TS.Lib.Notify(source, title, description, type?)`
+
+**Example (command)**
+
+```lua
+TS.Lib.AddCommand('example', {
+    help = 'Example TS-Lib command',
+    params = {}
+}, function(source, args, raw)
+    TS.Lib.Notify(source, 'Example', 'This is a TS-Lib command.', 'success')
+end)
+```
+
+### Shared helpers
+
+- `TS.Lib.Callback.Await(name, playerId, ...): any`
+- `TS.Lib.Callback.Register(name, cb)`
+- `TS.Lib.SetInterval(cb, ms): intervalId`
+- `TS.Lib.ClearInterval(intervalId)`
+
+**Example (callback)**
+
+```lua
+-- Server
+TS.Lib.Callback.Register('my_script:getData', function(source, extra)
+    return { ok = true, extra = extra }
+end)
+
+-- Client
+local result = TS.Lib.Callback.Await('my_script:getData', cache.serverId, 'hello')
+```
+
+---
+
+## Bridges (high level)
+
+> [!NOTE]
+> The exact surface of each bridge can evolve. This section documents the most commonly used patterns.
+
+### Framework bridge
+
+`TS.Bridge` exposes framework-related helpers (QBCore / ESX / QBox / standalone).  
+Common usage patterns:
+
+- `TS.Bridge.HasPermission(source, permission)` – framework-aware permission checks.
+- `TS.Bridge.GetPlayers()` – returns list of player sources (when supported).
+- `TS.Bridge.GetVehicleType(model)` – used by persistence scripts to know the correct vehicle type (`automobile`, `boat`, `heli`, etc.).
+
+### Garage bridge
+
+Used mainly by resources like `ts-persistence`:
+
+- `TS.Bridge.Garage.IsVehicleOwned(plate, netId?): boolean`
+- `TS.Bridge.Garage.SetVehicleOutsideState(plate, state)`
+
+These functions abstract the underlying garage system (`qb-garages`, `esx_garage`, etc.).
+
+### Keys bridge
+
+Used to integrate with key systems such as `qb-vehiclekeys` or `qs-vehiclekeys`:
+
+- `TS.Bridge.Keys.SetDoorStatus(entity, lockStatus)`
+
+Lock status typically corresponds to the native GTA lock states (1 = unlocked, 2 = locked, etc.).
+
+**Example**
+
+```lua
+-- Client side, via ts-persistence config hook
+RegisterNetEvent('ts-persistence:client:bridge:SetVehicleDoorStatusLocked', function(entity, lockStatus)
+    TS.Bridge.Keys.SetDoorStatus(entity, lockStatus)
+end)
+```
+
+For a full, always up-to-date list of available helpers, refer directly to the TS-Lib source on GitHub.
+

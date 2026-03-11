@@ -1,0 +1,130 @@
+---
+title: "Events"
+description: "Server and client events exposed by ts-persistence."
+icon: "bolt"
+---
+
+The persistence system exposes a set of server and client events to hook into key lifecycle moments (load, save, spawn, etc.).
+
+All event names are defined in `shared/events.lua` and are mirrored between server and client.
+
+## Overview
+
+Each logical event has:
+
+- a **server-side** name: `ts-persistence:server:<...>`
+- a **client-side** name: `ts-persistence:client:<...>`
+
+You can enable and listen to only the events you need in your own scripts.
+
+## onPersistenceLoad
+
+Triggered when ts-persistence finishes loading its data and is ready.
+
+- Server event: `ts-persistence:server:load`
+- Client event: `ts-persistence:client:load`
+
+### Example (server)
+
+```lua
+AddEventHandler('ts-persistence:server:load', function()
+    print('[ts-persistence] Persistence has finished loading on the server.')
+end)
+```
+
+## onVehicleCreated
+
+Triggered when a new vehicle is registered in the persistence system (temporary or permanent).
+
+- Server event: `ts-persistence:server:vehicle:created`
+- Client event: `ts-persistence:client:vehicle:created`
+
+**Payload:**
+
+```lua
+{
+    id = '123',           -- persistence id
+    vehicle = { ... },    -- full internal vehicle entry (see Data Structure page)
+}
+```
+
+### Example (server)
+
+```lua
+AddEventHandler('ts-persistence:server:vehicle:created', function(data)
+    print(('[ts-persistence] Vehicle created (id: %s, plate: %s)'):format(data.id, data.vehicle.plate))
+end)
+```
+
+## onVehicleUpdated
+
+Triggered whenever a vehicle's persisted data is updated (position, props, damage, etc.).
+
+- Server event: `ts-persistence:server:vehicle:updated`
+- Client event: `ts-persistence:client:vehicle:updated`
+
+**Payload:**
+
+Same structure as `onVehicleCreated`.
+
+## onVehicleForgot
+
+Triggered when a vehicle is **forgotten** from persistence (removed from cache and optionally from the database).
+
+- Server event: `ts-persistence:server:vehicle:forgot`
+- Client event: `ts-persistence:client:vehicle:forgot`
+
+**Payload:**
+
+```lua
+{
+    id = '123',
+    plate = 'ABC123',
+    vehicle = { ... },
+}
+```
+
+## onVehicleSpawned
+
+Triggered when a persisted vehicle is spawned on the server.
+
+- Server event: `ts-persistence:server:vehicle:spawned`
+- Client event: `ts-persistence:client:vehicle:spawned`
+
+**Payload:**
+
+```lua
+{
+    id = '123',
+    netId = 42,
+    entity = <entity>,    -- server entity (server-side only)
+    vehicle = { ... },
+}
+```
+
+## onVehiclesUnloaded
+
+Triggered when all vehicles are unloaded from the world (for example during a `/persistence reload`).
+
+- Server event: `ts-persistence:server:vehicles:unloaded`
+- Client event: `ts-persistence:client:vehicles:unloaded`
+
+**Payload:**
+
+```lua
+{
+    ['123'] = { ... },
+    ['124'] = { ... },
+    -- all unloaded vehicles
+}
+```
+
+## onPersistenceSave
+
+Triggered when persistence data is saved (e.g. after an autosave tick).
+
+- Server event: `ts-persistence:server:persistence:saved`
+- Client event: `ts-persistence:client:persistence:saved`
+
+You can use this event to plug in logging, metrics, or any additional housekeeping work.
+

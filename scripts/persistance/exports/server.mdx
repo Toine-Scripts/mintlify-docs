@@ -124,13 +124,14 @@ exports['ts-persistence']:DeleteVehicleFromDBByPlate(plate)
 Forget the persistence entry for a vehicle, completely removing it from the persistent system and the database.
 
 ```lua
-local success = exports['ts-persistence']:ForgetVehicle(vehicleId, plate)
+local success = exports['ts-persistence']:ForgetVehicle(vehicleId, plate, deleteEntity)
 ```
 
 | Argument | Type | Description |
 | :--- | :--- | :--- |
 | `vehicleId` | `string` \| `nil` | The persistence ID of the vehicle (optional if plate is provided). |
 | `plate`     | `string` \| `nil` | The plate of the vehicle (optional if vehicleId is provided). |
+| `deleteEntity` | `boolean` \| `nil` | If `true` and the vehicle is currently spawned, its entity will also be deleted from the world. Defaults to `false`. |
 
 **Returns:**
 - `boolean`: `true` if successful, `false` otherwise.

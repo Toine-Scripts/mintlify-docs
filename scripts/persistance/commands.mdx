@@ -1,0 +1,86 @@
+---
+title: "Commands"
+description: "Admin commands provided by ts-persistence."
+icon: "terminal"
+---
+
+ts-persistence exposes a few admin commands through `ts-lib` to help you manage persisted vehicles in-game.
+
+<Note>Permissions for these commands are fully configurable in `Config.Server.permissions` inside `shared/config.lua`.</Note>
+
+## /persistence
+
+### Syntax
+
+```lua
+/persistence reload
+```
+
+### Description
+
+Reloads the entire persistence system:
+
+- Unloads all currently spawned persisted vehicles.
+- Reloads all vehicles from the database.
+- Re-sends the vehicle grid to connected players (if your framework bridge supports it).
+
+### Permissions
+
+Controlled by `Config.Server.permissions.reload(source)`.  
+By default this uses the framework bridge (QBCore / ESX / etc.) and can be overridden in `shared/config.lua`.
+
+## /bringvehicle
+
+### Syntax
+
+```lua
+/bringvehicle <vehicleId>
+```
+
+### Description
+
+Teleports a persisted vehicle to the admin who ran the command:
+
+- Looks up the vehicle in `Server.Main.Vehicles` using its persistence ID.
+- Updates its position and heading to match the admin's current coordinates.
+
+This is useful to recover "lost" vehicles or debug specific entries.
+
+### Parameters
+
+| Name        | Type     | Description                          |
+| ----------- | -------- | ------------------------------------ |
+| `vehicleId` | `number` | The persistence ID of the vehicle.  |
+
+### Permissions
+
+Controlled by `Config.Server.permissions.bringVehicle(source)`.
+
+## /setvehicleasTemp
+
+### Syntax
+
+```lua
+/setvehicleasTemp <vehicleId> <isTemp>
+```
+
+### Description
+
+Toggles whether a persisted vehicle should be considered **temporary**:
+
+- When set to temporary, the vehicle is removed from the database and tracked only in memory.
+- When set back to permanent, it is re-inserted into the database with a new ID if needed.
+
+This leverages the internal `Server.Main.Vehicle.SetTemp` helper.
+
+### Parameters
+
+| Name        | Type      | Description                                        |
+| ----------- | --------- | -------------------------------------------------- |
+| `vehicleId` | `string`  | The current persistence ID of the vehicle.        |
+| `isTemp`    | `boolean` | `true` to mark as temporary, `false` for normal.  |
+
+### Permissions
+
+Controlled by `Config.Server.permissions.setVehicleTemp(source)`.
+

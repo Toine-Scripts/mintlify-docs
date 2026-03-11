@@ -1,6 +1,6 @@
 ---
 title: "Configuration"
-description: "Detailed explanation of the configuration options for ts-persistance."
+description: "Detailed explanation of the configuration options for ts-persistence."
 icon: "gear"
 ---
 
@@ -37,6 +37,10 @@ The configuration file is located at `shared/config.lua`. This page provides a l
   Function used to retrieve the current fuel level of a vehicle. By default, it uses the native `GetVehicleFuelLevel`.
 </ResponseField>
 
+<ResponseField name="Config.Client.fuel.set" type="function">
+  Function called to apply fuel level to a vehicle. Custom fuel scripts (like LegacyFuel) can be integrated here.
+</ResponseField>
+
 <ResponseField name="Config.Client.spawnRadius" type="number" default="200">
   The distance (in units) at which a persisted vehicle will start to spawn when a player approaches. If the vehicle was not already spawned.
 </ResponseField>
@@ -49,12 +53,8 @@ The configuration file is located at `shared/config.lua`. This page provides a l
   The maximum time (in ms) the client will wait to gain network control of the spawned vehicle before giving up. Do not change this value unless you know what you are doing.
 </ResponseField>
 
-<ResponseField name="Config.Client.propsApplyTryCount" type="number" default="2">
-  Number of attempts to re-apply vehicle properties (mods, colors) if a mismatch is detected after spawning. Default is 2. Do not change this value unless you know what you are doing.
-</ResponseField>
-
-<ResponseField name="Config.Client.setFuel" type="function">
-  Function called to apply fuel level to a vehicle. Custom fuel scripts (like LegacyFuel) can be integrated here.
+<ResponseField name="Config.Client.propsApplyTryCount" type="number" default="1">
+  Number of attempts to re-apply vehicle properties (mods, colors) if a mismatch is detected after spawning. Default is 1. Do not change this value unless you know what you are doing.
 </ResponseField>
 
 <ResponseField name="Config.Client.setVehicleDoorStatusLocked" type="function">
@@ -69,6 +69,14 @@ The configuration file is located at `shared/config.lua`. This page provides a l
 
 <ResponseField name="Config.Server.debug" type="boolean">
   Enables or disables server-side debug prints in the console.
+</ResponseField>
+
+<ResponseField name="Config.Server.getVehicleType" type="function">
+  Function used server-side to determine the vehicle type for spawning (e.g. `automobile`, `boat`, `heli`). By default, it relies on the framework bridge: `TS.Bridge.GetVehicleType(model)`.
+</ResponseField>
+
+<ResponseField name="Config.Server.IsVehicleOwned" type="function">
+  Function that checks if a given plate (and optional netId) belongs to an owned vehicle. This is used to decide whether a vehicle should be temporary or permanent.
 </ResponseField>
 
 <ResponseField name="Config.Server.realTimeDBSync" type="boolean">
@@ -93,11 +101,11 @@ The configuration file is located at `shared/config.lua`. This page provides a l
 </ResponseField>
 
 <ResponseField name="Config.Server.timeToDeleteTemp" type="number" default="2">
-  The age (in hours) at which temporary vehicles are automatically deleted. Set to `false` to disable deletion of temporary vehicles. Only applicable when `Config.Server.timeToDeleteActive` is `true`.
+  The age (in minutes) at which temporary vehicles are automatically deleted. For example, `120` would be 2 hours. Set to `false` to disable deletion of temporary vehicles. Only applicable when `Config.Server.timeToDeleteActive` is `true`.
 </ResponseField>
 
 <ResponseField name="Config.Server.timeToDeletePerm" type="number" default="false">
-  The age (in hours) at which permanent vehicles are automatically deleted. Set to `false` to disable deletion of permanent vehicles. Only applicable when `Config.Server.timeToDeleteActive` is `true`.
+  The age (in minutes) at which permanent vehicles are automatically deleted. Set to `false` to disable deletion of permanent vehicles. Only applicable when `Config.Server.timeToDeleteActive` is `true`.
 </ResponseField>
 
 <ResponseField name="Config.Server.timeToDeleteCheckInterval" type="number" default="5">
@@ -106,6 +114,10 @@ The configuration file is located at `shared/config.lua`. This page provides a l
 
 <ResponseField name="Config.Server.setVehicleOutsideStateOnStart" type="boolean" default="true">
   If `true`, vehicles will be set to the "outside" state when they are spawned by persistence. This ensures they behave correctly in the game world.
+</ResponseField>
+
+<ResponseField name="Config.Server.onRessourceStart.loadVehiclesToClients" type="boolean" default="true">
+  If `true`, all persisted vehicles are sent to connected clients when the resource starts, so they can be managed by the client-side grid system immediately.
 </ResponseField>
 
 <ResponseField name="Config.Server.afterSpawn" type="function">
