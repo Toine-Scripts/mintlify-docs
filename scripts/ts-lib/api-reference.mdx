@@ -1,144 +1,195 @@
 ---
 title: "API Reference"
-description: "Detailed TS-Lib API: TS, TS.Lib, and bridges."
+description: "Practical reference for TS-Lib utilities and bridges."
 icon: "book"
 ---
 
-This page lists the main functions exposed by **TS-Lib** once you include `@ts-lib/imports.lua` in your resource.
-
-All examples assume that the global `TS` namespace is available.
+This page gives you a **practical overview** of what TS-Lib exposes at runtime once you include `@ts-lib/import.lua` in your resource.
 
 ---
 
 ## Core utilities
 
-### Printing helpers
+TS-Lib attaches a few helpers to a global `TS` table that are reused across Toine Scripts.
+
+### Logging
 
 - `TS.Print(message, resourceName?)`
 - `TS.DebugPrint(message, resourceName?)`
 - `TS.ErrorPrint(message, resourceName?)`
 - `TS.SuccessPrint(message, resourceName?)`
 
-**Example**
-
 ```lua
 TS.DebugPrint('My script has started', GetCurrentResourceName())
 ```
 
-### Utils
+### Generic utils
+
+Common helpers include:
 
 - `TS.Utils.IsRessourceLoaded(resourceName): boolean`
 - `TS.Utils.IsTableEmpty(tbl): boolean`
 
-**Example**
-
 ```lua
-if not TS.Utils.IsRessourceLoaded('ox_lib') then
-    TS.ErrorPrint('ox_lib is missing, some features may not work')
+if not TS.Utils.IsRessourceLoaded('qb-core') then
+    TS.ErrorPrint('qb-core is missing, TS-Lib bridges will not work correctly')
 end
 ```
 
----
+### Intervals
 
-## TS.Lib (ox_lib wrapper)
+TS-Lib embeds an interval helper to simplify repeating callbacks:
 
-These helpers proxy `ox_lib` and are safe to use even if your own resource does not declare `ox_lib` in its `fxmanifest`.
-
-### Client-side
-
-- `TS.Lib.Grid.AddEntry(entry)`
-- `TS.Lib.Grid.RemoveEntry(entry)`
-- `TS.Lib.Grid.GetNearbyEntries(coords, filterCb?)`
-- `TS.Lib.OnCache(key, cb)`
-- `TS.Lib.Vehicle.GetProperties(vehicle)`
-- `TS.Lib.Vehicle.SetProperties(vehicle, props)`
-
-**Example**
+- `TS.Intervals.Set(callback, ms, ...): id`
+- `TS.Intervals.Clear(id)`
 
 ```lua
-TS.Lib.OnCache('vehicle', function(veh, oldVeh)
-    if veh then
-        TS.DebugPrint('Player entered a vehicle')
-    end
-end)
-```
+local id = TS.Intervals.Set(function()
+    TS.DebugPrint('Still alive')
+end, 5000)
 
-### Server-side
-
-- `TS.Lib.AddCommand(name, params, cb)`
-- `TS.Lib.Notify(source, title, description, type?)`
-
-**Example (command)**
-
-```lua
-TS.Lib.AddCommand('example', {
-    help = 'Example TS-Lib command',
-    params = {}
-}, function(source, args, raw)
-    TS.Lib.Notify(source, 'Example', 'This is a TS-Lib command.', 'success')
-end)
-```
-
-### Shared helpers
-
-- `TS.Lib.Callback.Await(name, playerId, ...): any`
-- `TS.Lib.Callback.Register(name, cb)`
-- `TS.Lib.SetInterval(cb, ms): intervalId`
-- `TS.Lib.ClearInterval(intervalId)`
-
-**Example (callback)**
-
-```lua
--- Server
-TS.Lib.Callback.Register('my_script:getData', function(source, extra)
-    return { ok = true, extra = extra }
-end)
-
--- Client
-local result = TS.Lib.Callback.Await('my_script:getData', cache.serverId, 'hello')
+-- later
+TS.Intervals.Clear(id)
 ```
 
 ---
 
-## Bridges (high level)
+## UI helpers
 
-> [!NOTE]
-> The exact surface of each bridge can evolve. This section documents the most commonly used patterns.
+TS-Lib also exposes small, framework-agnostic UI helpers through `TS.Lib.*`.  
+These are rendered via the bundled NUI (`ui/build`).
 
-### Framework bridge
+### Subtitle
 
-`TS.Bridge` exposes framework-related helpers (QBCore / ESX / QBox / standalone).  
-Common usage patterns:
+- `TS.Lib.Subtitle.Show(text: string)`
+- `TS.Lib.Subtitle.Hide()`
 
-- `TS.Bridge.HasPermission(source, permission)` – framework-aware permission checks.
-- `TS.Bridge.GetPlayers()` – returns list of player sources (when supported).
-- `TS.Bridge.GetVehicleType(model)` – used by persistence scripts to know the correct vehicle type (`automobile`, `boat`, `heli`, etc.).
-
-### Garage bridge
-
-Used mainly by resources like `ts-persistence`:
-
-- `TS.Bridge.Garage.IsVehicleOwned(plate, netId?): boolean`
-- `TS.Bridge.Garage.SetVehicleOutsideState(plate, state)`
-
-These functions abstract the underlying garage system (`qb-garages`, `esx_garage`, etc.).
-
-### Keys bridge
-
-Used to integrate with key systems such as `qb-vehiclekeys` or `qs-vehiclekeys`:
-
-- `TS.Bridge.Keys.SetDoorStatus(entity, lockStatus)`
-
-Lock status typically corresponds to the native GTA lock states (1 = unlocked, 2 = locked, etc.).
-
-**Example**
+From a client script that has included `@ts-lib/import.lua`:
 
 ```lua
--- Client side, via ts-persistence config hook
-RegisterNetEvent('ts-persistence:client:bridge:SetVehicleDoorStatusLocked', function(entity, lockStatus)
-    TS.Bridge.Keys.SetDoorStatus(entity, lockStatus)
-end)
+TS.Lib.Subtitle.Show('Press E to interact')
+
+-- later
+TS.Lib.Subtitle.Hide()
 ```
 
-For a full, always up-to-date list of available helpers, refer directly to the TS-Lib source on GitHub.
+From another resource using exports only:
+
+```lua
+exports['ts-lib']:SendSubtitle('Press E to interact')
+
+-- later
+exports['ts-lib']:HideSubtitle()
+```
+
+### Text UI (help text)
+
+- `TS.Lib.TextUI.Show(text: string, position?: string)`
+- `TS.Lib.TextUI.Hide()`
+
+`position` defaults to `'top-left'`. Common positions used by the UI are:
+
+- `top-left`
+- `top-center`
+
+Example from a client script:
+
+```lua
+TS.Lib.TextUI.Show('Press E to open garage', 'top-center')
+
+-- later
+TS.Lib.TextUI.Hide()
+```
+
+Or via exports:
+
+```lua
+exports['ts-lib']:SendTextUI('Press E to open garage', 'top-center')
+
+-- later
+exports['ts-lib']:HideTextUI()
+```
+
+---
+
+## Bridges overview
+
+The main reason to use TS-Lib is its **bridge** modules. They expose normalized APIs that hide framework-specific or script-specific details.
+
+- `Bridge.Framework.*` → talks to your **framework** (QBCore / ESX / QBox / standalone)
+- `Bridge.Garages.*` → talks to your **garage** script
+- `Bridge.VehicleKeys.*` → talks to your **vehicle keys** script
+
+Each bridge has its own dedicated page with full details:
+
+- [Framework Bridge](/scripts/ts-lib/bridges-framework)
+- [Garage Bridges](/scripts/ts-lib/bridges-garages)
+- [Vehicle Keys Bridges](/scripts/ts-lib/bridges-vehiclekeys)
+
+Below are the patterns you will most often use from a script that depends on TS-Lib.
+
+---
+
+## Framework bridge (quick reference)
+
+### Client
+
+- `Bridge.Framework.Client.PlayerData`  
+  Unified player data, automatically updated when the player loads / unloads / changes job.
+
+- `Bridge.Framework.Client.Functions.GetPlayerJob() -> ok, jobOrError`
+
+```lua
+local ok, job = Bridge.Framework.Client.Functions.GetPlayerJob()
+if ok then
+    print(('Job: %s (%s)'):format(job.name, job.label))
+end
+```
+
+### Server
+
+- `Bridge.Framework.Server.Functions.GetPlayerJob(source)`
+- `Bridge.Framework.Server.Functions.GetPlayersByJobName(jobName, checkOnDuty?)`
+- `Bridge.Framework.Server.Functions.GetPlayers()`
+- `Bridge.Framework.Server.Functions.GetVehicleType(model)`
+
+See [Framework Bridge](/scripts/ts-lib/bridges-framework) for framework-specific notes and event names.
+
+---
+
+## Garage bridge (quick reference)
+
+### Server
+
+- `Bridge.Garages.Server.Functions.IsVehicleOwned(plate, netId?) -> boolean`
+- `Bridge.Garages.Server.Functions.SetVehicleOutsideState(plate, state)`
+
+```lua
+local owned = Bridge.Garages.Server.Functions.IsVehicleOwned(plate, netId)
+if not owned then return end
+
+-- mark the vehicle as outside
+Bridge.Garages.Server.Functions.SetVehicleOutsideState(plate, true)
+```
+
+See [Garage Bridges](/scripts/ts-lib/bridges-garages) for the exact behavior per system.
+
+---
+
+## Vehicle keys bridge (quick reference)
+
+The keys bridge focuses on **locking / unlocking** vehicles from a unified entrypoint.
+
+### Client
+
+- `Bridge.VehicleKeys.Client.Functions.SetDoorStatus(entity, lockStatus)`
+
+```lua
+-- Example: lock a vehicle from another script
+Bridge.VehicleKeys.Client.Functions.SetDoorStatus(vehicle, 2) -- 2 = locked
+```
+
+Lock states follow GTA’s native semantics (`1` = unlocked, `2` = locked, `4` = locked for all players, etc.).
+
+See [Vehicle Keys Bridges](/scripts/ts-lib/bridges-vehiclekeys) for system-specific behavior (`qb-vehiclekeys`, `qs-vehiclekeys`, `standalone`).
 

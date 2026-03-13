@@ -36,6 +36,9 @@
                 "pages": [
                   "scripts/ts-lib/index",
                   "scripts/ts-lib/api-reference",
+                  "scripts/ts-lib/bridges-framework",
+                  "scripts/ts-lib/bridges-garages",
+                  "scripts/ts-lib/bridges-vehiclekeys",
                   "scripts/ts-lib/contributing"
                 ]
               },

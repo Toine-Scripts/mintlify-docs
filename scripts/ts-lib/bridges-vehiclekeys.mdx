@@ -1,0 +1,122 @@
+---
+title: "Vehicle Keys Bridges"
+description: "Lock and unlock vehicles with one simple bridge."
+icon: "key"
+---
+
+Vehicle keys bridges abstract how different key systems lock and unlock vehicles.  
+Your scripts call one function, and TS-Lib routes it to `qb-vehiclekeys`, `qs-vehiclekeys` or a standalone implementation.
+
+```lua
+-- Shared
+Bridge.VehicleKeys
+Bridge.VehicleKeys.Client
+Bridge.VehicleKeys.Server
+```
+
+---
+
+## Status & testing
+
+
+| Keys system       |   Status    |      Tested by |
+| :---------------- | :---------: | -------------: |
+| `qb-vehiclekeys`  | **Tested**  |         Toine  |
+| `qs-vehiclekeys`  | Experimental | waiting for feedback |
+| `standalone`      | **Tested** | Toine |
+
+---
+
+## Supported key systems
+
+TS-Lib ships with support for:
+
+- `qb-vehiclekeys`
+- `qs-vehiclekeys`
+- `standalone` (no external keys resource)
+
+Configuration is controlled via `ts-lib/config.lua`:
+
+```lua
+Config.VehicleKeys = 'auto' -- 'auto', 'qb-vehiclekeys', 'qs-vehiclekeys', 'standalone'
+
+Config.Data = {
+  VehicleKeys = {
+    ['qb-vehiclekeys'] = 'qb-vehiclekeys',
+    ['qs-vehiclekeys'] = 'qs-vehiclekeys',
+    ['standalone']     = 'standalone',
+  },
+}
+```
+
+When `Config.VehicleKeys = 'auto'`, TS-Lib selects the first started resource from `Config.Data.VehicleKeys`.
+
+---
+
+## Client-side API
+
+### `Bridge.VehicleKeys.Client.Functions.SetDoorStatus(entity, lockStatus)`
+
+This is the main entrypoint you will use from your scripts.
+
+```lua
+Bridge.VehicleKeys.Client.Functions.SetDoorStatus(vehicle, 2) -- lock
+Bridge.VehicleKeys.Client.Functions.SetDoorStatus(vehicle, 1) -- unlock
+```
+
+**Lock status convention** (GTA natives):
+
+- `1` – unlocked
+- `2` – locked
+- `4` – locked for all players, etc.
+
+#### Behavior per system
+
+- **`qb-vehiclekeys`**
+
+  ```lua
+  Bridge.VehicleKeys.Client.Functions.SetDoorStatus = function(entity, status)
+      TriggerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(entity), status)
+  end
+  ```
+
+- **`qs-vehiclekeys`**
+
+  ```lua
+  Bridge.VehicleKeys.Client.Functions.SetDoorStatus = function(entity, status)
+      exports["qs-vehiclekeys"]:DoorLogic(entity, true, status, true, true, true)
+  end
+  ```
+
+- **`standalone`**
+
+  ```lua
+  Bridge.VehicleKeys.Client.Functions.SetDoorStatus = function(entity, lockStatus)
+      local isLocked = (lockStatus ~= 1 and lockStatus ~= 0)
+      Entity(entity).state:set('isLocked', isLocked, true)
+      SetVehicleDoorsLocked(entity, lockStatus)
+
+      if lockStatus == 2 or lockStatus == 4 then
+          SetVehicleDoorsLockedForAllPlayers(entity, true)
+      else
+          SetVehicleDoorsLockedForAllPlayers(entity, false)
+      end
+  end
+  ```
+
+In standalone mode, lock state is kept entirely via entity state and natives, without any external resource.
+
+---
+
+## Server-side API
+
+Right now TS-Lib does not expose additional server-side helpers for keys.  
+The server bridge (`Bridge.VehicleKeys.Server`) is kept as a placeholder for future extensions:
+
+- Centralized key granting/revoking
+- Permission-aware lock/unlock operations
+- Auditing of lock events
+
+You are free to extend it in your own fork following the same structure as the existing bridges.
+
+***

@@ -1,0 +1,213 @@
+---
+title: "Framework Bridge"
+description: "Unify framework-specific calls (QBCore, ESX, Qbox, standalone) behind a single API."
+icon: "code-branch"
+---
+
+The **framework bridge** is the piece of TS-Lib that hides the differences between:
+
+- `qb-core` (`qbcore`)
+- `qbx_core` (`qbox`)
+- `es_extended` (`esx`)
+- a minimal **standalone** mode
+
+Instead of scattering `if framework == 'qbcore' then ... elseif framework == 'esx' ...` in your code, you call `Bridge.Framework.*` and let TS-Lib route to the right implementation.
+
+```lua
+-- Shared
+Bridge.Framework
+Bridge.Framework.Client
+Bridge.Framework.Server
+```
+
+---
+
+## Status & testing
+
+
+| Framework  |   Status    |      Tested by |
+| :--------- | :---------: | -------------: |
+| `qbcore`   | **Tested**  |         Toine  |
+| `esx`      | **Tested**  |         Toine  |
+| `qbox`     | Experimental | waiting for feedback |
+| `standalone` | **Tested** | Toine|
+---
+
+## How selection works
+
+Supported values in `ts-lib/config.lua`:
+
+- **Framework keys**: `qbcore`, `esx`, `qbox`, `standalone`
+- Mapped to resource names via `Config.Data.Framework`:
+
+```lua
+Config.Data.Framework = {
+  qbcore     = 'qb-core',
+  esx        = 'es_extended',
+  qbox       = 'qbx_core',
+  standalone = 'standalone',
+}
+```
+
+When `Config.Framework = 'auto'`, TS-Lib goes through this table and picks the **first started resource**.
+
+---
+
+## Client-side API
+
+### `Bridge.Framework.Client.PlayerData`
+
+Unified player data table populated automatically when the player loads and kept in sync on job changes.
+
+- QBCore / Qbox: based on `QBCore.Functions.GetPlayerData()`
+- ESX: based on `xPlayer` job data where possible
+- Standalone: minimal stub (no job system)
+
+### `Bridge.Framework.Client.Functions.GetPlayerJob()`
+
+```lua
+local ok, job = Bridge.Framework.Client.Functions.GetPlayerJob()
+if ok then
+  print(('Job: %s (%s)'):format(job.name, job.label))
+else
+  print('Error:', job)
+end
+```
+
+Returns:
+
+- `true, jobTable` on success
+- `false, errorMessage` if no job is available (for example in standalone)
+
+### `Bridge.Framework.Client.Functions.Notify(message, type?)`
+
+Generic notification helper:
+
+- QBCore / Qbox: `QBCore.Functions.Notify`
+- ESX: `ESX.ShowNotification` or a basic native fallback
+- Standalone: simple native notification
+
+```lua
+Bridge.Framework.Client.Functions.Notify('Saved vehicle successfully', 'success')
+```
+
+---
+
+## Client events
+
+All supported frameworks fire the same normalized events once the bridge is loaded:
+
+- `ts-lib:client:onPlayerLoaded (playerData)`
+- `ts-lib:client:onPlayerUnloaded ()`
+- `ts-lib:client:onJobUpdated (job)`
+
+You can listen directly to these events, or use the internal event system:
+
+```lua
+Bridge.Framework.Client.On('onPlayerLoaded', function(playerData)
+  print('Player loaded with job:', playerData.job and playerData.job.name)
+end)
+
+Bridge.Framework.Client.On('onJobUpdated', function(job)
+  print('Job updated to:', job.name)
+end)
+```
+
+---
+
+## Server-side API
+
+### `Bridge.Framework.Server.Functions.GetPlayerJob(source)`
+
+```lua
+local ok, job = Bridge.Framework.Server.Functions.GetPlayerJob(source)
+if not ok then
+  return print('Failed to get job:', job)
+end
+
+print(('Player %d is %s'):format(source, job.name))
+```
+
+### `Bridge.Framework.Server.Functions.GetPlayersByJobName(jobName, checkOnDuty?)`
+
+```lua
+local ok, players = Bridge.Framework.Server.Functions.GetPlayersByJobName('police', true)
+if ok then
+  print(('Found %d on-duty police players'):format(#players))
+else
+  print('Error:', players)
+end
+```
+
+### `Bridge.Framework.Server.Functions.GetPlayers()`
+
+Returns a list of player sources, using the most appropriate method for each framework:
+
+- QBCore: `QBCore.Functions.GetPlayers()`
+- Qbox: `exports.qbx_core:GetQBPlayers()`
+- ESX: `ESX.GetPlayers()` (or `GetPlayers()` as a fallback)
+- Standalone: `GetPlayers()`
+
+### `Bridge.Framework.Server.Functions.GetVehicleType(model)`
+
+```lua
+local vehicleType = Bridge.Framework.Server.Functions.GetVehicleType(GetHashKey('adder'))
+```
+
+When possible this uses framework-specific shared vehicle tables; otherwise it falls back to `'automobile'`.
+
+---
+
+## Server events
+
+Normalized events fired regardless of the underlying framework:
+
+- `ts-lib:server:onPlayerLoaded (source)`
+- `ts-lib:server:onPlayerUnloaded (source?)`
+- `ts-lib:server:onJobUpdated (job)`
+
+You can also subscribe through the server-side event emitter:
+
+```lua
+Bridge.Framework.Server.On('onPlayerLoaded', function(source)
+  print('Player loaded:', source)
+end)
+```
+
+---
+
+## Framework-specific notes
+
+### QBCore / Qbox
+
+- QBCore: `exports['qb-core']:GetCoreObject()`
+- Qbox: `exports['qbx_core']:GetCoreObject()` and `exports.qbx_core:GetQBPlayers()`
+
+Jobs are normalized into a structure similar to:
+
+```lua
+job = {
+  name         = 'police',
+  label        = 'Police',
+  onduty       = true,
+  type         = 'leo',
+  grade        = 3,
+  grade_name   = 'sergeant',
+  grade_label  = 'Sergeant',
+  grade_salary = 0,
+}
+```
+
+### ESX
+
+- Uses `exports['es_extended']:getSharedObject()`.
+- Bridges try to map ESX job information onto the same keys used by QB-style frameworks.
+
+### Standalone
+
+Standalone intentionally keeps a **minimal** surface:
+
+- No job system (`GetPlayerJob` returns an error).
+- `GetPlayers()` simply wraps the FiveM native.
+- `GetVehicleType` always returns `'automobile'`.
+
