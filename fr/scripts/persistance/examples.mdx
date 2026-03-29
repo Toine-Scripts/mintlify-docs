@@ -1,27 +1,27 @@
 ---
-title: "Examples"
-description: "Examples of how to integrate ts-persistence into other scripts."
+title: "Exemples"
+description: "Intégrer ts-persistence dans d’autres scripts."
 icon: "code"
 ---
 
-When a vehicle is deleted by an admin command or stored in a garage, you may need to remove it from persistence so it doesn't respawn later.
-Here are a few examples of how to accomplish this using the `ForgetVehicle` export.
+Quand un véhicule est supprimé par une commande admin ou rangé en garage, il faut souvent le retirer de la persistance pour qu’il ne réapparaisse pas plus tard.  
+Voici des exemples avec l’export `ForgetVehicle`.
 
-## Delete Vehicle Command (`/dv`)
+## Commande supprimer véhicule (`/dv`)
 
-When you delete a vehicle manually using a command, you should remove it from persistence so it is no longer restored automatically.
+Si vous supprimez un véhicule à la main, retirez-le de la persistance pour éviter qu’il soit restauré automatiquement.
 
 <Tabs>
-  <Tab title="QB Core">
+  <Tab title="QBCore">
 
-    Add this line: `exports['ts-persistence']:ForgetVehicle(nil, QBCore.Functions.GetPlate(veh))`
+    Ajoutez : `exports['ts-persistence']:ForgetVehicle(nil, QBCore.Functions.GetPlate(veh))`
 
     ```lua resources/[qb]/qb-core/client/events.lua
         RegisterNetEvent('QBCore:Command:DeleteVehicle', function()
             local ped = PlayerPedId()
             local veh = GetVehiclePedIsUsing(ped)
             if veh ~= 0 then
-                -- Add this line to forget the vehicle
+                -- Retirer le véhicule de la persistance
                 exports['ts-persistence']:ForgetVehicle(nil, QBCore.Functions.GetPlate(veh))
                 
                 SetEntityAsMissionEntity(veh, true, true)
@@ -31,7 +31,7 @@ When you delete a vehicle manually using a command, you should remove it from pe
                 local vehicles = GetGamePool('CVehicle')
                 for _, v in pairs(vehicles) do
                     if #(pcoords - GetEntityCoords(v)) <= 5.0 then
-                        -- Add this line to forget the vehicle
+                        -- Retirer le véhicule de la persistance
                         exports['ts-persistence']:ForgetVehicle(nil, QBCore.Functions.GetPlate(v))
                         
                         SetEntityAsMissionEntity(v, true, true)
@@ -44,15 +44,15 @@ When you delete a vehicle manually using a command, you should remove it from pe
   </Tab>
   <Tab title="ESX">
 
-    Add these lines before `DeleteEntity(Vehicle)`:
+    Ajoutez avant `DeleteEntity(Vehicle)` :
 
     ```lua
     local plate = GetVehicleNumberPlateText(Vehicle)
     if not plate or plate == "" then
-        print("No plate found for vehicle " .. tostring(Vehicle))
+        print("Aucune plaque pour le véhicule " .. tostring(Vehicle))
     else
         local success = exports['ts-persistence']:ForgetVehicle(nil, plate, true)
-        if not success then print("Failed to forget vehicle " .. tostring(Vehicle)) end
+        if not success then print("Échec ForgetVehicle " .. tostring(Vehicle)) end
     end
     ```
 
@@ -76,10 +76,10 @@ When you delete a vehicle manually using a command, you should remove it from pe
 
                         local plate = GetVehicleNumberPlateText(Vehicle)
                         if not plate or plate == "" then
-                            print("No plate found for vehicle " .. tostring(Vehicle))
+                            print("Aucune plaque pour le véhicule " .. tostring(Vehicle))
                         else
                             local success = exports['ts-persistence']:ForgetVehicle(nil, plate, true)
-                            if not success then print("Failed to forget vehicle " .. tostring(Vehicle)) end
+                            if not success then print("Échec ForgetVehicle " .. tostring(Vehicle)) end
                         end
 
                         DeleteEntity(Vehicle)
@@ -107,16 +107,16 @@ When you delete a vehicle manually using a command, you should remove it from pe
 
 
 
-## Adding to a Garage System
+## Intégration à un système de garage
 
-If you are adding this script to your server, you will need to call the export when a vehicle is successfully stored in the garage so that it is no longer restored from persistence.
+Lorsqu’un véhicule est correctement rangé, appelez l’export pour qu’il ne soit plus restauré par la persistance.
 
-Here is an example of how it looks in the default `qb-garages` script when a vehicle is deposited:
+Exemple avec `qb-garages` quand un véhicule est déposé :
 
 <Tabs>
-  <Tab title="QB Core">
+  <Tab title="QBCore">
 
-    Add this line: `exports['ts-persistence']:ForgetVehicle(nil, plate)`
+    Ajoutez : `exports['ts-persistence']:ForgetVehicle(nil, plate)`
 
     ```lua resources/[qb]/qb-garages/client/main.lua
         local function DepositVehicle(veh, data)
@@ -129,7 +129,7 @@ Here is an example of how it looks in the default `qb-garages` script when a veh
                     TriggerServerEvent('qb-mechanicjob:server:SaveVehicleProps', QBCore.Functions.GetVehicleProperties(veh))
                     TriggerServerEvent('qb-garages:server:updateVehicleStats', plate, totalFuel, engineDamage, bodyDamage)
                     
-                    -- Add this line to forget the vehicle from persistence
+                    -- Retirer le véhicule de la persistance
                     exports['ts-persistence']:ForgetVehicle(nil, plate)
                     
                     CheckPlayers(veh)
@@ -144,7 +144,7 @@ Here is an example of how it looks in the default `qb-garages` script when a veh
   </Tab>
   <Tab title="ESX">
 
-    Add this line before `ESX.Game.DeleteVehicle(vehicle)`: `exports['ts-persistence']:ForgetVehicle(nil, ESX.Game.GetPlate(vehicle))`
+    Ajoutez avant `ESX.Game.DeleteVehicle(vehicle)` : `exports['ts-persistence']:ForgetVehicle(nil, ESX.Game.GetPlate(vehicle))`
 
     ```lua [esx_addons]\esx_garage\client\main.lua:344-359
         if isInVehicle then

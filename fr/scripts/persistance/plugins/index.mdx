@@ -1,0 +1,26 @@
+---
+title: "Que sont les plugins ?"
+description: "Étendre le script avec des plugins."
+icon: "puzzle-piece"
+---
+
+Le script propose des plugins dans `bridge/plugins`, activables ou non via la configuration.
+
+## Activer un plugin
+
+Dans `shared/config.lua`, mettez la valeur correspondante à `true`.
+
+```lua shared/config.lua
+Config.Bridge = {
+    VehicleDeformation = true,
+    -- Autres plugins ici
+}
+```
+
+## Plugins disponibles
+
+<CardGroup cols={2}>
+  <Card title="Vehicle Deformation" icon="car-crash" href="/fr/scripts/persistance/plugins/vehicle-deformation">
+    Synchronise la déformation avec la ressource VehicleDeformation.
+  </Card>
+</CardGroup>

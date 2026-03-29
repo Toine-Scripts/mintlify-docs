@@ -1,0 +1,123 @@
+---
+title: "Ponts Garage"
+description: "Une seule API pour parler à plusieurs systèmes de garage depuis vos scripts."
+icon: "warehouse"
+---
+
+Les ponts garage normalisent la façon dont vos scripts interagissent avec différentes ressources de garage.  
+Au lieu d’interroger directement `player_vehicles` / `owned_vehicles`, vous passez par TS-Lib et le bon pont s’en charge.
+
+```lua
+-- Shared
+Bridge.Garages
+Bridge.Garages.Client
+Bridge.Garages.Server
+```
+
+---
+
+## Statut et tests
+
+
+| Système de garage     |   Statut    |      Testé par |
+| :---------------- | :---------: | -------------: |
+| `qb-garages`      | **Testé**  |         Toine  |
+| `esx_garage`      | **Testé**  |         Toine  |
+| `vms_garagesv2`   | Expérimental | en attente de retours |
+| `jg-advancedgarages` | Expérimental | en attente de retours |
+| `standalone` | **Testé** | Toine|
+---
+
+## Systèmes de garage pris en charge
+
+TS-Lib supporte nativement :
+
+- `qb-garages`
+- `esx_garage`
+- `vms_garagesv2`
+- `jg-advancedgarages`
+- `standalone`
+
+La configuration se fait dans `ts-lib/config.lua` :
+
+```lua
+Config.Garages = 'auto' -- 'auto', 'qb-garages', 'esx_garage', 'vms_garagesv2', 'jg-advancedgarages', 'standalone'
+
+Config.Data = {
+  Garages = {
+    ['qb-garages']         = 'qb-garages',
+    ['esx_garage']         = 'esx_garage',
+    ['vms_garagesv2']      = 'vms_garagesv2',
+    ['jg-advancedgarages'] = 'jg-advancedgarages',
+    ['standalone']         = 'standalone',
+  },
+}
+```
+
+Quand `Config.Garages = 'auto'`, TS-Lib choisit la **première ressource démarrée** listée dans `Config.Data.Garages`.
+
+---
+
+## API côté serveur
+
+### `Bridge.Garages.Server.Functions.IsVehicleOwned(plate, netId?)`
+
+Indique si la plaque appartient à un véhicule connu du système de garage configuré.
+
+```lua
+local isOwned = Bridge.Garages.Server.Functions.IsVehicleOwned('ABC123', netId)
+```
+
+Comportement global :
+
+- `qb-garages` : vérifie `player_vehicles.citizenid`
+- `esx_garage` : vérifie `owned_vehicles.owner`
+- `vms_garagesv2` / `jg-advancedgarages` :
+  - Utilisent `player_vehicles/citizenid` si `Config.Framework` est `qbcore` ou `qbox`
+  - Sinon `owned_vehicles/owner`
+- `standalone` :
+  - Utilise `Entity(entity).state.owned` si `netId` est fourni
+
+### `Bridge.Garages.Server.Functions.SetVehicleOutsideState(plate, state)`
+
+Met à jour l’état « dehors / rangé » d’un véhicule lorsqu’il apparaît ou est stocké.
+
+```lua
+-- Exemple : marquer un véhicule comme dehors au spawn
+Bridge.Garages.Server.Functions.SetVehicleOutsideState(plate, true)
+```
+
+Sémantique :
+
+- `state = true` → véhicule **dehors** (pas rangé)
+- `state = false` → véhicule **rangé** (dans un garage)
+
+Comportement par système :
+
+- `qb-garages` :
+  - Met à jour `player_vehicles.state` (`0` = dehors, `1` = rangé)
+  - Déclenche `qb-garages:server:UpdateOutsideVehicle`
+- `esx_garage` :
+  - Met à jour `owned_vehicles.stored` (`false` = dehors, `true` = rangé)
+- `vms_garagesv2` :
+  - Quand `state == true`, efface `garage`, `garageSpotID`, `parking_date`
+- `jg-advancedgarages` :
+  - Met à jour `in_garage` à `0` / `1` selon `state`
+- `standalone` :
+  - Retourne `true` sans toucher à la BDD (vous implémentez votre propre logique si besoin)
+
+---
+
+## API côté client
+
+La surface client pour les garages est volontairement légère et sert surtout de bus d’événements :
+
+```lua
+Bridge.Garages.Client.On('someEvent', function(...)
+  -- Vos intégrations de plus haut niveau peuvent s’appuyer là-dessus
+end)
+```
+
+La majeure partie du travail (mises à jour BDD, contrôle de propriété) se fait côté serveur.
+
+***

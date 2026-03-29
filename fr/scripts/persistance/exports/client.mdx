@@ -1,0 +1,140 @@
+---
+title: "Client"
+description: "Exports côté client pour interagir avec la persistance."
+icon: "code"
+---
+
+Vérifiez que la ressource tourne :
+
+```lua
+if GetResourceState('ts-persistence') == 'started' then
+    -- Script actif
+end
+```
+
+## Attention
+
+### Véhicules réseau
+Les entités véhicule doivent être **réseau**. Sinon le script renvoie `nil` ou échoue.
+
+## Exports
+
+### IsVehiclePersistenceDisabled
+
+Indique si la persistance est désactivée pour ce véhicule.
+
+```lua
+local isDisabled = exports['ts-persistence']:IsVehiclePersistenceDisabled(vehicle)
+```
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `vehicle` | `entity` | Entité véhicule à vérifier. |
+
+**Retour :**
+- `boolean` : `true` si la persistance est désactivée, sinon `false`.
+
+### SetVehiclePersistenceDisabled
+
+Active ou désactive la persistance pour un véhicule.
+
+```lua
+exports['ts-persistence']:SetVehiclePersistenceDisabled(vehicle, state)
+```
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `vehicle` | `entity` | Entité véhicule. |
+| `state` | `boolean` | `true` pour désactiver la persistance, `false` pour l’activer. |
+
+### CreateVehicle
+
+Crée manuellement les données de persistance pour un véhicule (sinon géré automatiquement).
+
+```lua
+local id = exports['ts-persistence']:CreateVehicle(vehicle)
+```
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `vehicle` | `entity` | Entité véhicule à persister. |
+
+**Retour :**
+- `string` \| `nil` : ID de persistance si succès, sinon `nil`.
+
+### UpdateVehicle
+
+Met à jour manuellement les données persistées d’un véhicule.
+
+```lua
+local success = exports['ts-persistence']:UpdateVehicle(vehicle)
+```
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `vehicle` | `entity` | Entité véhicule. |
+
+**Retour :**
+- `boolean` \| `nil` : `true` si succès, sinon `nil`.
+
+### GetVehiclePersistenceId
+
+Obtient l’ID de persistance d’un véhicule.
+
+```lua
+local id = exports['ts-persistence']:GetVehiclePersistenceId(vehicle)
+```
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `vehicle` | `entity` | Entité véhicule. |
+
+**Retour :**
+- `string` \| `nil` : ID si trouvé, sinon `nil`.
+
+### GetVehiclePersistenceData
+
+Récupère toutes les données de persistance d’un véhicule.
+
+```lua
+local data = exports['ts-persistence']:GetVehiclePersistenceData(vehicle)
+```
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `vehicle` | `entity` | Entité véhicule. |
+
+**Retour :**
+- `table` \| `nil` : table de données si trouvée, sinon `nil`.
+
+La table contient notamment :
+- `netId` : ID réseau
+- `plate` : plaque
+- `coords` : position
+- `hash` : hash du modèle
+- `model` : nom du modèle
+- `props` : propriétés (mods, couleurs)
+- `trailer` : données remorque
+- `doorStatus` : verrous
+- `damageData` : santé et carburant
+- `deformation` : déformation visuelle (si plugin activé)
+
+<Info>
+  Détail des champs : page [Structure des données](/fr/scripts/persistance/data-structure).
+</Info>
+
+### ForgetVehicle
+
+Retire complètement l’entrée de persistance (cache + BDD).
+
+```lua
+local success = exports['ts-persistence']:ForgetVehicle(vehicleId, plate)
+```
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `vehicleId` | `string` \| `nil` | ID de persistance (optionnel si `plate` fourni). |
+| `plate`     | `string` \| `nil` | Plaque (optionnel si `vehicleId` fourni). |
+
+**Retour :**
+- `boolean` : `true` si succès, sinon `false`.

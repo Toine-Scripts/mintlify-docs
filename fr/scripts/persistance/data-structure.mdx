@@ -1,0 +1,62 @@
+---
+title: "Structure des données"
+description: "Structure des données véhicule utilisée par la persistance."
+icon: "database"
+---
+
+Voici comment le script voit les données d’un véhicule. C’est ce que retourne `GetVehiclePersistenceData`.
+
+```lua
+{
+    netId = 123, -- ID réseau du véhicule
+    plate = "ABC 123", -- Texte de la plaque
+    coords = vector3(0.0, 0.0, 0.0), -- Coordonnées actuelles
+    hash = 123456789, -- Hash du modèle
+    model = "adder", -- Nom du modèle
+    isTemp = false, -- Véhicule temporaire (supprimé après restart, etc.)
+    deleteAt = 1678886400, -- Horodatage Unix de suppression planifiée (optionnel)
+    props = { ... }, -- Propriétés (mods, couleurs, etc.) via ox_lib
+    trailer = { -- Données remorque si attachée
+        netId = 456,
+        hash = 987654321,
+        model = "trailer",
+        coords = vector3(0.0, -10.0, 0.0),
+    } or false,
+    doorStatus = { ... }, -- État de verrouillage des portes
+    damageData = { -- Dégâts
+        bodyDamage = 1000.0,
+        engineDamage = 1000.0,
+        fuel = 100.0,
+        deformation = { ... }
+    }
+}
+```
+
+## Détail des champs
+
+### Props
+La table `props` contient mods et personnalisation, via `lib.getVehicleProperties`.
+
+### Données de dégâts
+La table `damageData` stocke :
+- `bodyDamage` : intégrité carrosserie (0–1000).
+- `engineDamage` : intégrité moteur (0–1000).
+- `fuel` : niveau de carburant (0–100).
+- `deformation` : données de déformation visuelle. 
+
+<Note>
+  Le champ `deformation` n’est présent que si le plugin [VehicleDeformation](/fr/scripts/persistance/plugins/vehicle-deformation) est activé.
+</Note>
+
+## Véhicules temporaires
+
+Un véhicule peut être marqué temporaire : il ne reste pas définitivement.
+
+- `isTemp` : si `true`, véhicule temporaire, suppression possible selon conditions (restart, délais).
+- `deleteAt` : horodatage Unix (secondes) pour suppression automatique planifiée.
+
+
+## Plugins
+
+### Vehicle Deformation
+Nous prenons en charge la ressource [VehicleDeformation](/fr/scripts/persistance/plugins/vehicle-deformation) pour synchroniser la déformation. Voir la page plugin pour plus de détails.

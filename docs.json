@@ -18,9 +18,9 @@
         }
       ]
     },
-    "tabs": [
+    "languages": [
       {
-        "tab": "Documentation",
+        "language": "en",
         "groups": [
           {
             "group": "Getting started",
@@ -69,6 +69,62 @@
                   "scripts/persistance/data-structure",
                   "scripts/persistance/issues",
                   "scripts/persistance/changelog"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "language": "fr",
+        "groups": [
+          {
+            "group": "Pour commencer",
+            "pages": [
+              "fr/index"
+            ]
+          },
+          {
+            "group": "Scripts",
+            "pages": [
+              {
+                "group": "TS-Lib",
+                "pages": [
+                  "fr/scripts/ts-lib/index",
+                  "fr/scripts/ts-lib/api-reference",
+                  "fr/scripts/ts-lib/bridges-framework",
+                  "fr/scripts/ts-lib/bridges-garages",
+                  "fr/scripts/ts-lib/bridges-vehiclekeys",
+                  "fr/scripts/ts-lib/contributing"
+                ]
+              },
+              {
+                "group": "Persistance",
+                "pages": [
+                  "fr/scripts/persistance/index",
+                  "fr/scripts/persistance/installation",
+                  "fr/scripts/persistance/config",
+                  "fr/scripts/persistance/commands",
+                  "fr/scripts/persistance/events",
+                  {
+                    "group": "Exports",
+                    "pages": [
+                      "fr/scripts/persistance/exports/client",
+                      "fr/scripts/persistance/exports/server"
+                    ]
+                  },
+                  "fr/scripts/persistance/data-structure",
+                  "fr/scripts/persistance/examples",
+                  {
+                    "group": "Plugins",
+                    "pages": [
+                      "fr/scripts/persistance/plugins/index",
+                      "fr/scripts/persistance/plugins/vehicle-deformation"
+                    ]
+                  },
+                  "fr/scripts/persistance/data-structure",
+                  "fr/scripts/persistance/issues",
+                  "fr/scripts/persistance/changelog"
                 ]
               }
             ]

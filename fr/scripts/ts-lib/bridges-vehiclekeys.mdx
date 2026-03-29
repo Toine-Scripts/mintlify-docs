@@ -1,0 +1,122 @@
+---
+title: "Ponts Clés véhicule"
+description: "Verrouiller et déverrouiller les véhicules avec un pont simple."
+icon: "key"
+---
+
+Les ponts clés véhicule abstraient la façon dont les différents scripts de clés verrouillent et déverrouillent les véhicules.  
+Vos scripts appellent une fonction et TS-Lib route vers `qb-vehiclekeys`, `qs-vehiclekeys` ou une implémentation standalone.
+
+```lua
+-- Shared
+Bridge.VehicleKeys
+Bridge.VehicleKeys.Client
+Bridge.VehicleKeys.Server
+```
+
+---
+
+## Statut et tests
+
+
+| Système de clés       |   Statut    |      Testé par |
+| :---------------- | :---------: | -------------: |
+| `qb-vehiclekeys`  | **Testé**  |         Toine  |
+| `qs-vehiclekeys`  | Expérimental | en attente de retours |
+| `standalone`      | **Testé** | Toine |
+
+---
+
+## Systèmes de clés pris en charge
+
+TS-Lib embarque le support pour :
+
+- `qb-vehiclekeys`
+- `qs-vehiclekeys`
+- `standalone` (aucune ressource de clés externe)
+
+Configuration dans `ts-lib/config.lua` :
+
+```lua
+Config.VehicleKeys = 'auto' -- 'auto', 'qb-vehiclekeys', 'qs-vehiclekeys', 'standalone'
+
+Config.Data = {
+  VehicleKeys = {
+    ['qb-vehiclekeys'] = 'qb-vehiclekeys',
+    ['qs-vehiclekeys'] = 'qs-vehiclekeys',
+    ['standalone']     = 'standalone',
+  },
+}
+```
+
+Quand `Config.VehicleKeys = 'auto'`, TS-Lib sélectionne la première ressource démarrée dans `Config.Data.VehicleKeys`.
+
+---
+
+## API côté client
+
+### `Bridge.VehicleKeys.Client.Functions.SetDoorStatus(entity, lockStatus)`
+
+Point d’entrée principal depuis vos scripts.
+
+```lua
+Bridge.VehicleKeys.Client.Functions.SetDoorStatus(vehicle, 2) -- verrouiller
+Bridge.VehicleKeys.Client.Functions.SetDoorStatus(vehicle, 1) -- déverrouiller
+```
+
+**Convention d’état de verrouillage** (natives GTA) :
+
+- `1` – déverrouillé
+- `2` – verrouillé
+- `4` – verrouillé pour tous les joueurs, etc.
+
+#### Comportement par système
+
+- **`qb-vehiclekeys`**
+
+  ```lua
+  Bridge.VehicleKeys.Client.Functions.SetDoorStatus = function(entity, status)
+      TriggerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(entity), status)
+  end
+  ```
+
+- **`qs-vehiclekeys`**
+
+  ```lua
+  Bridge.VehicleKeys.Client.Functions.SetDoorStatus = function(entity, status)
+      exports["qs-vehiclekeys"]:DoorLogic(entity, true, status, true, true, true)
+  end
+  ```
+
+- **`standalone`**
+
+  ```lua
+  Bridge.VehicleKeys.Client.Functions.SetDoorStatus = function(entity, lockStatus)
+      local isLocked = (lockStatus ~= 1 and lockStatus ~= 0)
+      Entity(entity).state:set('isLocked', isLocked, true)
+      SetVehicleDoorsLocked(entity, lockStatus)
+
+      if lockStatus == 2 or lockStatus == 4 then
+          SetVehicleDoorsLockedForAllPlayers(entity, true)
+      else
+          SetVehicleDoorsLockedForAllPlayers(entity, false)
+      end
+  end
+  ```
+
+En mode standalone, l’état de verrouillage repose uniquement sur le state bag de l’entité et les natives, sans ressource externe.
+
+---
+
+## API côté serveur
+
+Pour l’instant TS-Lib n’expose pas d’helpers serveur supplémentaires pour les clés.  
+Le pont serveur (`Bridge.VehicleKeys.Server`) est un emplacement réservé pour de futures extensions :
+
+- Octroi / révocation centralisés des clés
+- Opérations de verrou avec prise en compte des permissions
+- Traçabilité des événements de verrou
+
+Vous pouvez l’étendre dans votre fork en suivant la même structure que les ponts existants.
+
+***

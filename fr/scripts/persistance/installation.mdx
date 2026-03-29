@@ -1,0 +1,57 @@
+---
+title: "Installation"
+description: "Comment installer et configurer le script."
+icon: "download"
+---
+
+## 1. Prérequis
+
+Ce script dépend des ressources suivantes. Installez-les **avant** de lancer la ressource :
+
+- **[ts-lib](https://store.toine.me/download/ts-lib)** (**obligatoire**)  
+  Pont et utilitaires pour que ts-persistence reste autonome et indépendant.
+  <Card title="Télécharger TS-Lib" icon="download" href="https://store.toine.me/download/ts-lib">
+    Dernière version de la bibliothèque requise.
+  </Card>
+- **[ox_lib](https://github.com/communityox/ox_lib/releases)** (**obligatoire**)  
+  Guide : [https://coxdocs.dev/ox_lib](https://coxdocs.dev/ox_lib)
+
+- **[oxmysql](https://github.com/communityox/oxmysql/releases)** (**obligatoire**)  
+  Guide : [https://coxdocs.dev/oxmysql](https://coxdocs.dev/oxmysql)
+
+> Les ressources Overextended sont maintenues par l’organisation Community Ox. Documentation : [https://coxdocs.dev/](https://coxdocs.dev/).
+
+---
+
+## 2. Support des frameworks
+
+Un framework est nécessaire. Les suivants sont pris en charge :
+
+- **[QBCore](https://github.com/qbcore-framework/qb-core)**
+- **[QBox](https://github.com/Qbox-project/qbox-core)**
+- **[ESX](https://github.com/esx-framework/esx_core)**
+- **Standalone** (ponts personnalisés possibles dans `ts-lib`)
+
+> **[IMPORTANT]**  
+> Nous ne configurons plus les frameworks, clés véhicule ou garages dans `ts-persistence`. Tout passe par **`ts-lib`**. Configurez clés et garages dans `ts-lib/shared/config.lua`.
+
+## 3. Installation
+
+<Steps>
+  <Step title="Ajouter le script">
+    Placez le dossier `ts-persistence` dans le répertoire `resources` de votre serveur.
+  </Step>
+  <Step title="Configurer server.cfg">
+    Ajoutez `ensure ts-persistence` à votre `server.cfg`, après les dépendances.
+    
+    ```js server.cfg
+    ensure <votre_framework>
+
+    ensure ox_lib
+    ensure oxmysql
+    ensure ts-lib
+
+    ensure ts-persistence
+    ```
+  </Step>
+</Steps>

@@ -1,0 +1,47 @@
+---
+title: "Dépannage"
+description: "Problèmes courants et solutions."
+icon: "warning"
+---
+
+## Problèmes courants
+
+### Véhicules verrouillés de façon inattendue
+Souvent dû à des scripts externes (clés, PNJ, trafic) qui verrouillent les véhicules au spawn.
+
+#### Exemple : qb-vehiclekeys
+Par défaut, `qb-vehiclekeys` verrouille les véhicules non possédés par le joueur. Pour la compatibilité :
+
+```lua qb-vehiclekeys/config.lua
+Config.LockNPCParkedCars = false
+Config.LockNPCDrivingCars = false
+```
+
+## Performance & optimisation
+
+### Problèmes de performance BDD
+
+En cas de lenteur BDD, désactivez la synchro temps réel :
+
+```lua config.lua
+Config.Server.realTimeDBSync = false
+```
+
+<Warning>
+**Compromis :**
+
+*   **Activé (true) :** sécurité des données maximale ; en cas de crash serveur, peu ou pas de perte.
+*   **Désactivé (false) :** meilleures perfs et moins de charge. Recommandé sur serveurs très peuplés. En crash, perte possible jusqu’au dernier intervalle d’auto-sauvegarde.
+</Warning>
+
+<Card title="✋ Conseil personnel (Toine)">
+  Je recommande de **désactiver** la synchro BDD temps réel quel que soit l’effectif. Impact perfs souvent fort et le risque de perte reste faible avec l’auto-sauvegarde.
+</Card>
+
+## Correctifs à venir
+
+Un script autonome et léger pour gérer le verrou au spawn est en préparation ; sortie gratuite prochaine.
+
+<Note>
+Restez informés ou obtenez de l’aide sur le [Discord](https://store.toine.me/discord).
+</Note>

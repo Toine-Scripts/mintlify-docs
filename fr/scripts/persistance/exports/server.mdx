@@ -1,0 +1,137 @@
+---
+title: "Serveur"
+description: "Exports côté serveur pour interagir avec la persistance."
+icon: "server"
+---
+
+Vérifiez que la ressource tourne :
+
+```lua
+if GetResourceState('ts-persistence') == 'started' then
+    -- Script actif
+end
+```
+
+## Exports
+
+### DeleteVehicleEntity
+
+Supprime l’entité véhicule du monde de jeu mais **conserve** les données en BDD.
+
+```lua
+exports['ts-persistence']:DeleteVehicleEntity(vehicleId)
+```
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `vehicleId` | `string` | ID de persistance unique du véhicule. |
+
+### GetAllVehicles
+
+Liste tous les véhicules actuellement chargés par la persistance.
+
+```lua
+local vehicles = exports['ts-persistence']:GetAllVehicles()
+```
+
+**Retour :**
+- `table` : dictionnaire de tous les véhicules actifs.
+
+### DoesVehicleExistInDb
+
+Vérifie si un véhicule existe en BDD.
+
+```lua
+local exists = exports['ts-persistence']:DoesVehicleExistInDb(vehicleId)
+```
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `vehicleId` | `string` | ID de persistance du véhicule. |
+
+**Retour :**
+- `boolean` : `true` si présent, sinon `false`.
+
+### Reload
+
+Recharge tous les véhicules depuis la BDD et rafraîchit le système.
+
+```lua
+exports['ts-persistence']:Reload()
+```
+
+### UpdateVehiclePos
+
+Met à jour la position d’un véhicule persistant en mémoire.
+
+```lua
+exports['ts-persistence']:UpdateVehiclePos(vehicleId, coords, heading)
+```
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `vehicleId` | `string` | ID de persistance du véhicule. |
+| `coords` | `vector3` | Nouvelles coordonnées. |
+| `heading` | `number` | Nouveau cap. |
+
+### UnloadAllVehicles
+
+Supprime toutes les entités véhicule persistantes du monde (**sans** effacer la BDD).
+
+```lua
+exports['ts-persistence']:UnloadAllVehicles()
+```
+
+### SetVehicleDeleteAt
+
+Définit un horodatage Unix pour suppression automatique en BDD.
+
+```lua
+exports['ts-persistence']:SetVehicleDeleteAt(vehicleId, timeTimestamp)
+```
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `vehicleId` | `string` | ID de persistance du véhicule. |
+| `timeTimestamp` | `number` | Horodatage Unix de suppression. |
+
+### DeleteVehicleFromDB
+
+Supprime un véhicule de la BDD de persistance par ID.
+
+```lua
+exports['ts-persistence']:DeleteVehicleFromDB(vehicleId)
+```
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `vehicleId` | `string` | ID de persistance à supprimer. |
+
+### DeleteVehicleFromDBByPlate
+
+Supprime un véhicule de la BDD par plaque.
+
+```lua
+exports['ts-persistence']:DeleteVehicleFromDBByPlate(plate)
+```
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `plate` | `string` | Plaque du véhicule à supprimer en BDD. |
+
+### ForgetVehicle
+
+Retire l’entrée de persistance (système + BDD).
+
+```lua
+local success = exports['ts-persistence']:ForgetVehicle(vehicleId, plate, deleteEntity)
+```
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `vehicleId` | `string` \| `nil` | ID de persistance (optionnel si `plate` fourni). |
+| `plate`     | `string` \| `nil` | Plaque (optionnel si `vehicleId` fourni). |
+| `deleteEntity` | `boolean` \| `nil` | Si `true` et que le véhicule est spawné, l’entité est aussi supprimée du monde. Défaut : `false`. |
+
+**Retour :**
+- `boolean` : `true` si succès, sinon `false`.

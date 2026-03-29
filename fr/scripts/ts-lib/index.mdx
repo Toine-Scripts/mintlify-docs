@@ -1,0 +1,97 @@
+---
+title: 'TS-Lib'
+description: 'Bibliothèque utilitaire et ponts universels pour FiveM.'
+icon: 'layer-group'
+---
+
+## Vue d’ensemble
+
+**TS-Lib** sert à éviter la prise en charge douloureuse de plusieurs frameworks, inventaires, systèmes de garage et scripts de clés. Au lieu d’encombrer vos ressources avec des `if/else` à l’infini, `ts-lib` centralise tout sous l’espace de noms unifié `TS`.
+
+Elle est conçue pour être injectée dynamiquement dans n’importe quel script, en gardant le code de la ressource propre, rapide et totalement indépendant.
+
+<CardGroup cols={2}>
+  <Card title="Télécharger TS-Lib" icon="download" href="https://store.toine.me/download/ts-lib">
+      Obtenir la dernière version de la ressource.
+  </Card>
+  <Card title="Contribuer à TS-Lib" icon="hands-holding-circle" href="/fr/scripts/ts-lib/contributing">
+      Proposer des ponts, correctifs et améliorations.
+  </Card>
+</CardGroup>
+
+---
+
+## Fonctionnalités
+
+- **Détection automatique du framework** : support natif de `qb-core`, `qbx_core`, `es_extended` et `standalone`. Le framework le plus moderne disponible est choisi automatiquement ou via la configuration forcée.
+- **Ponts unifiés** :
+  - **Garages** : support natif de `qb-garages`, `esx_garage`, `vms_garagesv2`, `jg-advancedgarages` et `standalone`.
+  - **Clés** : support natif de `qb-vehiclekeys`, `qs-vehiclekeys` et `standalone`.
+- **Utilitaires centralisés** : affichages, debug et vérifications de ressources sont centralisés (`TS.Print`, `TS.DebugPrint`, `TS.ErrorPrint`).
+- **Helpers UI intégrés** : sous-titres et aide à l’écran via NUI simples (`TS.Lib.Subtitle`, `TS.Lib.TextUI`), utilisables aussi via exports.
+
+---
+
+## Installation
+
+Intégrer `ts-lib` dans vos scripts est très simple.
+
+1. Placez le dossier `ts-lib` dans votre répertoire `resources`.
+2. Dans le `fxmanifest.lua` du script qui doit utiliser `ts-lib`, ajoutez cette ligne dans `shared_scripts` :
+
+```lua
+shared_scripts {
+    '@ts-lib/imports.lua',
+    -- Vos autres shared_scripts...
+}
+```
+
+C’est tout. `ts-lib` démarre, détecte le framework du serveur, charge les configurations, expose l’espace de noms `TS` et charge dynamiquement les modules nécessaires.
+
+---
+
+## Configuration
+
+Vous pouvez choisir les systèmes utilisés par `ts-lib` dans `ts-lib/config.lua`.
+
+```lua
+Config = {
+    debug = true,
+
+    -- Framework : 'auto', 'qbcore', 'esx', 'qbox', 'standalone'
+    Framework = 'auto',
+
+    -- Garage : 'auto', 'qb-garages', 'esx_garage', 'vms_garagesv2', 'jg-advancedgarages', 'standalone'
+    Garages = 'auto',
+
+    -- Clés véhicule : 'auto', 'qb-vehiclekeys', 'qs-vehiclekeys', 'standalone'
+    VehicleKeys = 'auto',
+
+    Data = {
+        Framework = {
+            qbcore = 'qb-core',
+            esx = 'es_extended',
+            qbox = 'qbx_core',
+            standalone = 'standalone',
+        },
+        Garages = {
+            ['qb-garages']        = 'qb-garages',
+            ['esx_garage']        = 'esx_garage',
+            ['vms_garagesv2']     = 'vms_garagesv2',
+            ['jg-advancedgarages']= 'jg-advancedgarages',
+            ['standalone']        = 'standalone',
+        },
+        VehicleKeys = {
+            ['qb-vehiclekeys'] = 'qb-vehiclekeys',
+            ['qs-vehiclekeys'] = 'qs-vehiclekeys',
+            ['standalone']     = 'standalone',
+        },
+    },
+}
+```
+
+---
+
+## Référence API
+
+Pour une description détaillée fonction par fonction de TS-Lib et de ses ponts, consultez la page [Référence API](/fr/scripts/ts-lib/api-reference).

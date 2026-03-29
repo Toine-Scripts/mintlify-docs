@@ -1,0 +1,129 @@
+---
+title: "Événements"
+description: "Événements serveur et client exposés par ts-persistence."
+icon: "bolt"
+---
+
+Le système de persistance expose des événements serveur et client pour accrocher aux moments clés du cycle de vie (chargement, sauvegarde, spawn, etc.).
+
+Tous les noms sont définis dans `shared/events.lua` et reflétés côté serveur et client.
+
+## Vue d’ensemble
+
+Chaque événement logique a :
+
+- un nom **serveur** : `ts-persistence:server:<...>`
+- un nom **client** : `ts-persistence:client:<...>`
+
+Vous n’activez et n’écoutez que ce dont vous avez besoin.
+
+## onPersistenceLoad
+
+Déclenché quand ts-persistence a fini de charger ses données et est prêt.
+
+- Serveur : `ts-persistence:server:load`
+- Client : `ts-persistence:client:load`
+
+### Exemple (serveur)
+
+```lua
+AddEventHandler('ts-persistence:server:load', function()
+    print('[ts-persistence] Persistance chargée côté serveur.')
+end)
+```
+
+## onVehicleCreated
+
+Déclenché quand un nouveau véhicule est enregistré dans la persistance (temporaire ou permanent).
+
+- Serveur : `ts-persistence:server:vehicle:created`
+- Client : `ts-persistence:client:vehicle:created`
+
+**Charge utile :**
+
+```lua
+{
+    id = '123',           -- id de persistance
+    vehicle = { ... },    -- entrée véhicule interne complète (voir Structure des données)
+}
+```
+
+### Exemple (serveur)
+
+```lua
+AddEventHandler('ts-persistence:server:vehicle:created', function(data)
+    print(('[ts-persistence] Véhicule créé (id: %s, plaque: %s)'):format(data.id, data.vehicle.plate))
+end)
+```
+
+## onVehicleUpdated
+
+Déclenché à chaque mise à jour des données persistées (position, props, dégâts, etc.).
+
+- Serveur : `ts-persistence:server:vehicle:updated`
+- Client : `ts-persistence:client:vehicle:updated`
+
+**Charge utile :**
+
+Même structure que `onVehicleCreated`.
+
+## onVehicleForgot
+
+Déclenché quand un véhicule est **retiré** de la persistance (retiré du cache et éventuellement de la BDD).
+
+- Serveur : `ts-persistence:server:vehicle:forgot`
+- Client : `ts-persistence:client:vehicle:forgot`
+
+**Charge utile :**
+
+```lua
+{
+    id = '123',
+    plate = 'ABC123',
+    vehicle = { ... },
+}
+```
+
+## onVehicleSpawned
+
+Déclenché quand un véhicule persistant est spawné côté serveur.
+
+- Serveur : `ts-persistence:server:vehicle:spawned`
+- Client : `ts-persistence:client:vehicle:spawned`
+
+**Charge utile :**
+
+```lua
+{
+    id = '123',
+    netId = 42,
+    entity = <entity>,    -- entité serveur (serveur uniquement)
+    vehicle = { ... },
+}
+```
+
+## onVehiclesUnloaded
+
+Déclenché quand tous les véhicules sont déchargés du monde (ex. lors d’un `/persistence reload`).
+
+- Serveur : `ts-persistence:server:vehicles:unloaded`
+- Client : `ts-persistence:client:vehicles:unloaded`
+
+**Charge utile :**
+
+```lua
+{
+    ['123'] = { ... },
+    ['124'] = { ... },
+    -- tous les véhicules déchargés
+}
+```
+
+## onPersistenceSave
+
+Déclenché quand les données sont sauvegardées (ex. après un tick d’auto-sauvegarde).
+
+- Serveur : `ts-persistence:server:persistence:saved`
+- Client : `ts-persistence:client:persistence:saved`
+
+Utile pour logs, métriques ou tâches annexes.

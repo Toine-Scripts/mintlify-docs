@@ -1,0 +1,149 @@
+---
+title: "Configuration"
+description: "Détail des options de configuration de ts-persistence."
+icon: "gear"
+---
+
+Le fichier de configuration se trouve dans `shared/config.lua`. Cette page explique chaque réglage.
+
+> [!NOTE]
+> Vous cherchez les options **Framework**, **Garage** ou **Clés** ?  
+> ts-persistence est totalement indépendant : tous les ponts (QBCore, ESX, qs-vehiclekeys, qb-garages, etc.) sont gérés uniquement par `ts-lib`. Paramétrez-les dans `ts-lib/shared/config.lua`.
+
+
+## Paramètres du pont
+
+<ResponseField name="Config.Bridge.VehicleDeformation" type="boolean" default="false">
+  Si `true`, le script synchronise la déformation visuelle des véhicules via le plugin [VehicleDeformation](https://github.com/Kiminaze/VehicleDeformation/). Plus d’infos [ici](/fr/scripts/persistance/plugins/vehicle-deformation).
+</ResponseField>
+
+## Paramètres globaux
+
+<ResponseField name="Config.Global.trailerActive" type="boolean" default="true">
+  Si activé, une remorque attachée à un véhicule est aussi sauvegardée et restaurée au spawn du véhicule principal.
+</ResponseField>
+
+<ResponseField name="Config.Global.disableTemporaryVehicles" type="boolean" default="false">
+  Si activé, tous les véhicules deviennent permanents : ils ne sont plus supprimés après un redémarrage ou un restart du script.
+</ResponseField>
+
+## Paramètres client
+
+<ResponseField name="Config.Client.debug" type="boolean" default="false">
+  Active ou désactive les logs de debug client dans la console F8.
+</ResponseField>
+
+<ResponseField name="Config.Client.fuel.Get" type="function">
+  Fonction pour lire le niveau de carburant. Par défaut : native `GetVehicleFuelLevel`.
+</ResponseField>
+
+<ResponseField name="Config.Client.fuel.set" type="function">
+  Fonction pour appliquer le niveau de carburant. Les scripts custom (ex. LegacyFuel) peuvent s’intégrer ici.
+</ResponseField>
+
+<ResponseField name="Config.Client.spawnRadius" type="number" default="200">
+  Distance (unités de jeu) à laquelle un véhicule persistant commence à apparaître quand un joueur s’approche, s’il n’était pas déjà spawné.
+</ResponseField>
+
+<ResponseField name="Config.Client.spawnTimeout" type="number" default="100">
+  Temps max (ms) pendant lequel le client attend que l’entité véhicule existe après le déclenchement du spawn serveur. Ne modifiez pas sans savoir pourquoi.
+</ResponseField>
+
+<ResponseField name="Config.Client.netWorkControlTimeout" type="number" default="100">
+  Temps max (ms) pour obtenir le contrôle réseau du véhicule spawné avant abandon. Ne modifiez pas sans savoir pourquoi.
+</ResponseField>
+
+<ResponseField name="Config.Client.propsApplyTryCount" type="number" default="1">
+  Nombre de tentatives pour réappliquer les propriétés (mods, couleurs) si une incohérence est détectée après spawn. Défaut : 1. Ne modifiez pas sans savoir pourquoi.
+</ResponseField>
+
+<ResponseField name="Config.Client.setVehicleDoorStatusLocked" type="function">
+  Gère le verrouillage local des portes. Reçoit l’état de verrou GTA brut (1 = déverrouillé, 2 = verrouillé, etc.). Voir [FiveM Natives](https://docs.fivem.net/natives/?_0xD72CEF2).
+</ResponseField>
+
+<ResponseField name="Config.Client.DisableSpawning" type="function">
+  Fonction retournant `true` ou `false`. Si `true`, aucun véhicule ne spawn pour ce joueur (cinématiques, certains états).
+</ResponseField>
+
+## Paramètres serveur
+
+<ResponseField name="Config.Server.debug" type="boolean">
+  Active ou désactive les logs de debug serveur dans la console.
+</ResponseField>
+
+<ResponseField name="Config.Server.getVehicleType" type="function">
+  Fonction serveur pour déterminer le type de véhicule au spawn (ex. `automobile`, `boat`, `heli`). Par défaut : pont framework `TS.Bridge.GetVehicleType(model)`.
+</ResponseField>
+
+<ResponseField name="Config.Server.IsVehicleOwned" type="function">
+  Vérifie si une plaque (et `netId` optionnel) correspond à un véhicule possédé. Sert à décider si le véhicule est temporaire ou permanent.
+</ResponseField>
+
+<ResponseField name="Config.Server.realTimeDBSync" type="boolean">
+  <Warning>
+    **Performance :**
+    - **true** : chaque changement est écrit immédiatement en BDD. Sécurité des données élevée, charge serveur plus forte.
+    - **false** : (recommandé) synchronisation en mémoire + intervalles d’auto-sauvegarde. Bien meilleur pour les perfs serveur.
+  </Warning>
+  Plus d’infos : section *Performance & optimisation* sur la page [Dépannage](/fr/scripts/persistance/issues).
+</ResponseField>
+
+<ResponseField name="Config.Server.autoSaveActive" type="boolean" default="true">
+  Active ou désactive l’auto-sauvegarde. Si activé, les véhicules sont enregistrés en BDD à intervalles réguliers.
+</ResponseField>
+
+<ResponseField name="Config.Server.autoSaveInterval" type="number" default="5">
+  Intervalle (en minutes) entre les sauvegardes automatiques. S’applique seulement si `Config.Server.autoSaveActive` est `true`.
+</ResponseField>
+
+<ResponseField name="Config.Server.timeToDeleteActive" type="boolean" default="true">
+  Active ou désactive la suppression basée sur l’âge du véhicule.
+</ResponseField>
+
+<ResponseField name="Config.Server.timeToDeleteTemp" type="number" default="2">
+  Âge (en minutes) au-delà duquel les véhicules **temporaires** sont supprimés. Ex. `120` = 2 heures. `false` pour désactiver. S’applique si `Config.Server.timeToDeleteActive` est `true`.
+</ResponseField>
+
+<ResponseField name="Config.Server.timeToDeletePerm" type="number" default="false">
+  Âge (en minutes) pour supprimer les véhicules **permanents**. `false` pour ne jamais supprimer les permanents. Si `timeToDeleteActive` est activé.
+</ResponseField>
+
+<ResponseField name="Config.Server.timeToDeleteCheckInterval" type="number" default="5">
+  Intervalle (minutes) entre les vérifications de suppression. Si `timeToDeleteActive` est activé.
+</ResponseField>
+
+<ResponseField name="Config.Server.setVehicleOutsideStateOnStart" type="boolean" default="true">
+  Si `true`, les véhicules spawnés par la persistance sont marqués « dehors » pour un comportement cohérent en jeu.
+</ResponseField>
+
+<ResponseField name="Config.Server.onRessourceStart.loadVehiclesToClients" type="boolean" default="true">
+  Si `true`, tous les véhicules persistés sont envoyés aux clients connectés au démarrage de la ressource pour alimenter tout de suite la grille côté client.
+</ResponseField>
+
+<ResponseField name="Config.Server.afterSpawn" type="function">
+  Callback serveur déclenché juste après la création d’un véhicule. Utile pour le modifier après spawn.
+</ResponseField>
+
+<ResponseField name="Config.Server.setVehicleDoorStatusLocked" type="function">
+  Verrouillage côté serveur et synchro avec les scripts de clés (ex. `qb-vehiclekeys`). Met à jour le state bag `isLocked`.
+</ResponseField>
+
+<ResponseField name="Config.Server.notifyPlayer" type="function">
+  Callback pour afficher des notifications. Reçoit la source du joueur, un message et un type optionnel (ex. `success`, `error`).
+</ResponseField>
+
+<ResponseField name="Config.Server.permissions" type="object">
+  Vérifications de permissions pour les commandes.
+  
+  <ResponseField name="reload" type="function">
+    Permission pour `/persistence reload`. Par défaut : système du pont framework ou repli sur une vérif ACE.
+  </ResponseField>
+  
+  <ResponseField name="bringVehicle" type="function">
+    Permission pour `/bringvehicle`. Idem.
+  </ResponseField>
+  
+  <ResponseField name="setVehicleTemp" type="function">
+    Permission pour `/setvehicleasTemp`. Idem.
+  </ResponseField>
+</ResponseField>

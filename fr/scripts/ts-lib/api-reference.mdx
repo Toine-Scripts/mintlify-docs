@@ -1,0 +1,194 @@
+---
+title: "Référence API"
+description: "Référence pratique des utilitaires et ponts TS-Lib."
+icon: "book"
+---
+
+Cette page donne une **vue d’ensemble pratique** de ce que TS-Lib expose à l’exécution une fois `@ts-lib/import.lua` inclus dans votre ressource.
+
+---
+
+## Utilitaires principaux
+
+TS-Lib attache quelques helpers à une table globale `TS`, réutilisés dans les scripts Toine.
+
+### Journalisation
+
+- `TS.Print(message, resourceName?)`
+- `TS.DebugPrint(message, resourceName?)`
+- `TS.ErrorPrint(message, resourceName?)`
+- `TS.SuccessPrint(message, resourceName?)`
+
+```lua
+TS.DebugPrint('Mon script a démarré', GetCurrentResourceName())
+```
+
+### Utilitaires génériques
+
+Exemples de helpers courants :
+
+- `TS.Utils.IsRessourceLoaded(resourceName): boolean`
+- `TS.Utils.IsTableEmpty(tbl): boolean`
+
+```lua
+if not TS.Utils.IsRessourceLoaded('qb-core') then
+    TS.ErrorPrint('qb-core est manquant, les ponts TS-Lib ne fonctionneront pas correctement')
+end
+```
+
+### Intervalles
+
+TS-Lib embarque un helper d’intervalles pour simplifier les callbacks répétés :
+
+- `TS.Intervals.Set(callback, ms, ...): id`
+- `TS.Intervals.Clear(id)`
+
+```lua
+local id = TS.Intervals.Set(function()
+    TS.DebugPrint('Toujours actif')
+end, 5000)
+
+-- plus tard
+TS.Intervals.Clear(id)
+```
+
+---
+
+## Helpers UI
+
+TS-Lib expose aussi de petits helpers UI agnostiques du framework via `TS.Lib.*`.  
+Ils sont rendus via le NUI intégré (`ui/build`).
+
+### Sous-titre
+
+- `TS.Lib.Subtitle.Show(text: string)`
+- `TS.Lib.Subtitle.Hide()`
+
+Depuis un script client ayant inclus `@ts-lib/import.lua` :
+
+```lua
+TS.Lib.Subtitle.Show('Appuyez sur E pour interagir')
+
+-- plus tard
+TS.Lib.Subtitle.Hide()
+```
+
+Depuis une autre ressource via exports uniquement :
+
+```lua
+exports['ts-lib']:SendSubtitle('Appuyez sur E pour interagir')
+
+-- plus tard
+exports['ts-lib']:HideSubtitle()
+```
+
+### Text UI (texte d’aide)
+
+- `TS.Lib.TextUI.Show(text: string, position?: string)`
+- `TS.Lib.TextUI.Hide()`
+
+`position` vaut par défaut `'top-left'`. Positions courantes :
+
+- `top-left`
+- `top-center`
+
+Exemple côté client :
+
+```lua
+TS.Lib.TextUI.Show('Appuyez sur E pour ouvrir le garage', 'top-center')
+
+-- plus tard
+TS.Lib.TextUI.Hide()
+```
+
+Ou via exports :
+
+```lua
+exports['ts-lib']:SendTextUI('Appuyez sur E pour ouvrir le garage', 'top-center')
+
+-- plus tard
+exports['ts-lib']:HideTextUI()
+```
+
+---
+
+## Vue d’ensemble des ponts
+
+L’intérêt principal de TS-Lib est ses modules **pont**. Ils exposent des API normalisées qui cachent les détails propres au framework ou au script.
+
+- `Bridge.Framework.*` → dialogue avec votre **framework** (QBCore / ESX / QBox / standalone)
+- `Bridge.Garages.*` → dialogue avec votre script de **garage**
+- `Bridge.VehicleKeys.*` → dialogue avec votre script de **clés véhicule**
+
+Chaque pont a sa page dédiée :
+
+- [Pont Framework](/fr/scripts/ts-lib/bridges-framework)
+- [Ponts Garage](/fr/scripts/ts-lib/bridges-garages)
+- [Ponts Clés véhicule](/fr/scripts/ts-lib/bridges-vehiclekeys)
+
+Ci-dessous les usages les plus courants depuis un script dépendant de TS-Lib.
+
+---
+
+## Pont framework (rappel rapide)
+
+### Client
+
+- `Bridge.Framework.Client.PlayerData`  
+  Données joueur unifiées, mises à jour automatiquement au chargement / déchargement / changement de métier.
+
+- `Bridge.Framework.Client.Functions.GetPlayerJob() -> ok, jobOrError`
+
+```lua
+local ok, job = Bridge.Framework.Client.Functions.GetPlayerJob()
+if ok then
+    print(('Métier : %s (%s)'):format(job.name, job.label))
+end
+```
+
+### Serveur
+
+- `Bridge.Framework.Server.Functions.GetPlayerJob(source)`
+- `Bridge.Framework.Server.Functions.GetPlayersByJobName(jobName, checkOnDuty?)`
+- `Bridge.Framework.Server.Functions.GetPlayers()`
+- `Bridge.Framework.Server.Functions.GetVehicleType(model)`
+
+Voir [Pont Framework](/fr/scripts/ts-lib/bridges-framework) pour les détails par framework et les noms d’événements.
+
+---
+
+## Pont garage (rappel rapide)
+
+### Serveur
+
+- `Bridge.Garages.Server.Functions.IsVehicleOwned(plate, netId?) -> boolean`
+- `Bridge.Garages.Server.Functions.SetVehicleOutsideState(plate, state)`
+
+```lua
+local owned = Bridge.Garages.Server.Functions.IsVehicleOwned(plate, netId)
+if not owned then return end
+
+-- marquer le véhicule comme dehors
+Bridge.Garages.Server.Functions.SetVehicleOutsideState(plate, true)
+```
+
+Voir [Ponts Garage](/fr/scripts/ts-lib/bridges-garages) pour le comportement exact par système.
+
+---
+
+## Pont clés véhicule (rappel rapide)
+
+Le pont clés se concentre sur le **verrouillage / déverrouillage** depuis un point d’entrée unique.
+
+### Client
+
+- `Bridge.VehicleKeys.Client.Functions.SetDoorStatus(entity, lockStatus)`
+
+```lua
+-- Exemple : verrouiller depuis un autre script
+Bridge.VehicleKeys.Client.Functions.SetDoorStatus(vehicle, 2) -- 2 = verrouillé
+```
+
+Les états suivent la sémantique des natives GTA (`1` = déverrouillé, `2` = verrouillé, `4` = verrouillé pour tous les joueurs, etc.).
+
+Voir [Ponts Clés véhicule](/fr/scripts/ts-lib/bridges-vehiclekeys) pour le comportement par système (`qb-vehiclekeys`, `qs-vehiclekeys`, `standalone`).
