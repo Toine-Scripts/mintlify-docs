@@ -65,6 +65,13 @@ Si vous supprimez un véhicule à la main, retirez-le de la persistance pour év
                 local pedVehicle = GetVehiclePedIsIn(ped, false)
 
                 if DoesEntityExist(pedVehicle) then
+                    local plate = GetVehicleNumberPlateText(pedVehicle)
+                    if not plate or plate == "" then
+                        print("No plate found for vehicle " .. tostring(pedVehicle))
+                    else
+                        local success = exports['ts-persistence']:ForgetVehicle(nil, plate, true)
+                        if not success then print("Failed to forget vehicle " .. tostring(pedVehicle)) end
+                    end
                     DeleteEntity(pedVehicle)
                 end
 

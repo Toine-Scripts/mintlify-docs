@@ -4,11 +4,11 @@ description: 'Bibliothèque utilitaire et ponts universels pour FiveM.'
 icon: 'layer-group'
 ---
 
-## Vue d’ensemble
+## Vue d'ensemble
 
-**TS-Lib** sert à éviter la prise en charge douloureuse de plusieurs frameworks, inventaires, systèmes de garage et scripts de clés. Au lieu d’encombrer vos ressources avec des `if/else` à l’infini, `ts-lib` centralise tout sous l’espace de noms unifié `TS`.
+**TS-Lib** sert à éviter la prise en charge douloureuse de plusieurs frameworks, inventaires, systèmes de garage et scripts de clés. Au lieu d'encombrer vos ressources avec des `if/else` à l'infini, `ts-lib` centralise tout sous l'espace de noms unifié `TS`.
 
-Elle est conçue pour être injectée dynamiquement dans n’importe quel script, en gardant le code de la ressource propre, rapide et totalement indépendant.
+Elle est conçue pour être injectée dynamiquement dans n'importe quel script, en gardant le code de la ressource propre, rapide et totalement indépendant.
 
 <CardGroup cols={2}>
   <Card title="Télécharger TS-Lib" icon="download" href="https://store.toine.me/download/ts-lib">
@@ -25,10 +25,14 @@ Elle est conçue pour être injectée dynamiquement dans n’importe quel script
 
 - **Détection automatique du framework** : support natif de `qb-core`, `qbx_core`, `es_extended` et `standalone`. Le framework le plus moderne disponible est choisi automatiquement ou via la configuration forcée.
 - **Ponts unifiés** :
+  - **Framework** : support natif de `qb-core`, `es_extended`, `qbx_core` et `standalone`.
   - **Garages** : support natif de `qb-garages`, `esx_garage`, `vms_garagesv2`, `jg-advancedgarages` et `standalone`.
   - **Clés** : support natif de `qb-vehiclekeys`, `qs-vehiclekeys` et `standalone`.
-- **Utilitaires centralisés** : affichages, debug et vérifications de ressources sont centralisés (`TS.Print`, `TS.DebugPrint`, `TS.ErrorPrint`).
-- **Helpers UI intégrés** : sous-titres et aide à l’écran via NUI simples (`TS.Lib.Subtitle`, `TS.Lib.TextUI`), utilisables aussi via exports.
+  - **Notifications** : support natif des notifications de framework (QBCore/ESX) avec une API unifiée.
+- **Utilitaires centralisés** : affichages, debug et vérifications de ressources sont centralisés (`Utils.Print`, `Utils.DebugPrint`, `Utils.ErrorPrint`, `Utils.SuccessPrint`).
+- **Helpers UI intégrés** : sous-titres, aide à l'écran et input texte via NUI simples (`TS.Lib.Subtitle`, `TS.Lib.TextUI`, `TS.Lib.TextInput`), utilisables aussi via exports.
+- **Système de commandes** : Enregistrement de commandes avec validation de type et support des permissions (`TS.Lib.Command.add`).
+- **Vérificateur de mises à jour** : Vérification automatique des mises à jour pour les ressources Toine Scripts (`TS.CheckUpdate`).
 
 ---
 
@@ -41,12 +45,12 @@ Intégrer `ts-lib` dans vos scripts est très simple.
 
 ```lua
 shared_scripts {
-    '@ts-lib/imports.lua',
+    '@ts-lib/import.lua',
     -- Vos autres shared_scripts...
 }
 ```
 
-C’est tout. `ts-lib` démarre, détecte le framework du serveur, charge les configurations, expose l’espace de noms `TS` et charge dynamiquement les modules nécessaires.
+C'est tout. `ts-lib` démarre, détecte le framework du serveur, charge les configurations, expose l'espace de noms `TS` et charge dynamiquement les modules nécessaires.
 
 ---
 
@@ -67,6 +71,16 @@ Config = {
     -- Clés véhicule : 'auto', 'qb-vehiclekeys', 'qs-vehiclekeys', 'standalone'
     VehicleKeys = 'auto',
 
+    -- Système de notifications : 'auto', 'qbcore', 'esx'
+    Notify = 'auto',
+
+    -- Correction de compatibilité zUI pour l'input texte (mettre à true si vous utilisez zUI-v2)
+    zUIFix = true,
+
+    -- URLs pour la vérification automatique des mises à jour
+    UpdateCheckURL = 'https://raw.githubusercontent.com/toine-scripts/ts-lib/main/version.json',
+    UpdateCheckChangelogURL = 'https://docs.toine.me/scripts/ts-lib/changelog',
+
     Data = {
         Framework = {
             qbcore = 'qb-core',
@@ -85,6 +99,10 @@ Config = {
             ['qb-vehiclekeys'] = 'qb-vehiclekeys',
             ['qs-vehiclekeys'] = 'qs-vehiclekeys',
             ['standalone']     = 'standalone',
+        },
+        Notify = {
+            qbcore = 'qb-core',
+            esx = 'esx_notify',
         },
     },
 }

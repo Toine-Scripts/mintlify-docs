@@ -24,24 +24,38 @@ The configuration file is located at `shared/config.lua`. This page provides a l
 </ResponseField>
 
 <ResponseField name="Config.Global.disableTemporaryVehicles" type="boolean" default="false">
-  When enabled, all vehicles will be permanent. This means that vehicles will not be deleted after a reboot or script restart.
+  When enabled, all vehicle will be permanent. This means that vehicles will not be deleted after a reboot or script restart.
 </ResponseField>
 
 ## Client Settings
 
-<ResponseField name="Config.Client.debug" type="boolean" default="false">
+<ResponseField name="Config.Client.debug" type="boolean" default="true">
   Enables or disables client-side debug prints in the F8 console.
 </ResponseField>
 
 <ResponseField name="Config.Client.fuel.Get" type="function">
   Function used to retrieve the current fuel level of a vehicle. By default, it uses the native `GetVehicleFuelLevel`.
+  
+  ```lua
+  Get = function(veh)
+      -- return exports['LegacyFuel']:GetFuel(veh) -- Example for legacy fuel
+      return GetVehicleFuelLevel(veh) -- Native
+  end
+  ```
 </ResponseField>
 
 <ResponseField name="Config.Client.fuel.set" type="function">
   Function called to apply fuel level to a vehicle. Custom fuel scripts (like LegacyFuel) can be integrated here.
+  
+  ```lua
+  set = function(veh, fuelAmount)
+      SetVehicleFuelLevel(veh, fuelAmount)
+      -- exports['LegacyFuel']:SetFuel(veh, fuelAmount) -- Example for legacy fuel
+  end
+  ```
 </ResponseField>
 
-<ResponseField name="Config.Client.spawnRadius" type="number" default="200">
+<ResponseField name="Config.Client.spawnRadius" type="number" default="200.0">
   The distance (in units) at which a persisted vehicle will start to spawn when a player approaches. If the vehicle was not already spawned.
 </ResponseField>
 
@@ -59,6 +73,14 @@ The configuration file is located at `shared/config.lua`. This page provides a l
 
 <ResponseField name="Config.Client.setVehicleDoorStatusLocked" type="function">
   Handles local door locking. It receives the raw GTA lock status (1 = unlocked, 2 = locked, etc.). See more at [FiveM Natives](https://docs.fivem.net/natives/?_0xD72CEF2).
+  
+  ```lua
+  setVehicleDoorStatusLocked = function(entity, status)
+      if not DoesEntityExist(entity) then return false end
+      SetVehicleDoorsLocked(entity, status)
+      SetVehicleDoorsLockedForAllPlayers(entity, status ~= 1)
+  end
+  ```
 </ResponseField>
 
 <ResponseField name="Config.Client.DisableSpawning" type="function">
@@ -67,19 +89,33 @@ The configuration file is located at `shared/config.lua`. This page provides a l
 
 ## Server Settings
 
-<ResponseField name="Config.Server.debug" type="boolean">
+<ResponseField name="Config.Server.debug" type="boolean" default="true">
   Enables or disables server-side debug prints in the console.
 </ResponseField>
 
 <ResponseField name="Config.Server.getVehicleType" type="function">
-  Function used server-side to determine the vehicle type for spawning (e.g. `automobile`, `boat`, `heli`). By default, it relies on the framework bridge: `TS.Bridge.GetVehicleType(model)`.
+  Function used server-side to determine the vehicle type for spawning (e.g. `automobile`, `boat`, `heli`). By default, it relies on the framework bridge: `Bridge.Framework.Server.Functions.GetVehicleType(model)`.
 </ResponseField>
 
 <ResponseField name="Config.Server.IsVehicleOwned" type="function">
-  Function that checks if a given plate (and optional netId) belongs to an owned vehicle. This is used to decide whether a vehicle should be temporary or permanent.
+  Function that checks if a given plate (and optional netId) belongs to an owned vehicle. This is used to decide whether a vehicle should be temporary or permanent. Uses the garage bridge from `ts-lib`.
 </ResponseField>
 
-<ResponseField name="Config.Server.realTimeDBSync" type="boolean">
+<ResponseField name="Config.Server.afterSpawn" type="function">
+  A callback function triggered on the server immediately after a vehicle is created. Useful for custom scripts that need to modify the vehicle after spawning.
+  
+  ```lua
+  afterSpawn = function(veh)
+      -- You can add any code here that you want to run after a vehicle is spawned
+  end
+  ```
+</ResponseField>
+
+<ResponseField name="Config.Server.onRessourceStart.loadVehiclesToClients" type="boolean" default="true">
+  If `true`, all persisted vehicles are sent to connected clients when the resource starts, so they can be managed by the client-side grid system immediately.
+</ResponseField>
+
+<ResponseField name="Config.Server.realTimeDBSync" type="boolean" default="false">
   <Warning>
     **Important Performance Note:**
     - **true**: Saves every change to the database immediately. High data safety but high resource usage.
@@ -116,20 +152,24 @@ The configuration file is located at `shared/config.lua`. This page provides a l
   If `true`, vehicles will be set to the "outside" state when they are spawned by persistence. This ensures they behave correctly in the game world.
 </ResponseField>
 
-<ResponseField name="Config.Server.onRessourceStart.loadVehiclesToClients" type="boolean" default="true">
-  If `true`, all persisted vehicles are sent to connected clients when the resource starts, so they can be managed by the client-side grid system immediately.
-</ResponseField>
-
-<ResponseField name="Config.Server.afterSpawn" type="function">
-  A callback function triggered on the server immediately after a vehicle is created. Useful for custom scripts that need to modify the vehicle after spawning. 
-</ResponseField>
-
 <ResponseField name="Config.Server.setVehicleDoorStatusLocked" type="function">
-  Handles server-side locking and synchronization with key systems (like `qb-vehiclekeys`). It sets the `isLocked` state bag for synchronization.
+  Handles server-side locking and synchronization with key systems (like `qb-vehiclekeys`). It sets the `isLocked` state bag for synchronization and triggers the client bridge event.
+  
+  ```lua
+  setVehicleDoorStatusLocked = function(entity, lockStatus)
+      TriggerClientEvent('ts-persistence:client:bridge:SetVehicleDoorStatusLocked', -1, entity, lockStatus)
+  end
+  ```
 </ResponseField>
 
 <ResponseField name="Config.Server.notifyPlayer" type="function">
   A callback function used to display notifications to players. It receives the player's source, a message string, and an optional type (e.g., 'success', 'error').
+  
+  ```lua
+  notifyPlayer = function(source, message, type)
+      Bridge.Notify.Server.Functions.Notify(source, message, type or 'success')
+  end
+  ```
 </ResponseField>
 
 <ResponseField name="Config.Server.permissions" type="object">
@@ -137,13 +177,31 @@ The configuration file is located at `shared/config.lua`. This page provides a l
   
   <ResponseField name="reload" type="function">
     Permission check for the `/persistence reload` command. By default, it uses the framework's bridge permission system or falls back to an ACE check.
+    
+    ```lua
+    reload = function(source)
+        return TS.Bridge.HasPermission(source, 'admin')
+    end
+    ```
   </ResponseField>
   
   <ResponseField name="bringVehicle" type="function">
     Permission check for the `/bringvehicle` command. By default, it uses the framework's bridge permission system or falls back to an ACE check.
+    
+    ```lua
+    bringVehicle = function(source)
+        return TS.Bridge.HasPermission(source, 'admin')
+    end
+    ```
   </ResponseField>
   
   <ResponseField name="setVehicleTemp" type="function">
     Permission check for the `/setvehicleasTemp` command. By default, it uses the framework's bridge permission system or falls back to an ACE check.
+    
+    ```lua
+    setVehicleTemp = function(source)
+        return TS.Bridge.HasPermission(source, 'admin')
+    end
+    ```
   </ResponseField>
 </ResponseField>

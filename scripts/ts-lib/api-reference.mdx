@@ -14,25 +14,25 @@ TS-Lib attaches a few helpers to a global `TS` table that are reused across Toin
 
 ### Logging
 
-- `TS.Print(message, resourceName?)`
-- `TS.DebugPrint(message, resourceName?)`
-- `TS.ErrorPrint(message, resourceName?)`
-- `TS.SuccessPrint(message, resourceName?)`
+- `Utils.Print(message, resourceName?)`
+- `Utils.DebugPrint(message, resourceName?)`
+- `Utils.ErrorPrint(message, resourceName?)`
+- `Utils.SuccessPrint(message, resourceName?)`
 
 ```lua
-TS.DebugPrint('My script has started', GetCurrentResourceName())
+Utils.DebugPrint('My script has started', GetCurrentResourceName())
 ```
 
 ### Generic utils
 
 Common helpers include:
 
-- `TS.Utils.IsRessourceLoaded(resourceName): boolean`
-- `TS.Utils.IsTableEmpty(tbl): boolean`
+- `Utils.IsRessourceLoaded(resourceName): boolean`
+- `Utils.IsTableEmpty(tbl): boolean`
 
 ```lua
-if not TS.Utils.IsRessourceLoaded('qb-core') then
-    TS.ErrorPrint('qb-core is missing, TS-Lib bridges will not work correctly')
+if not Utils.IsRessourceLoaded('qb-core') then
+    Utils.ErrorPrint('qb-core is missing, TS-Lib bridges will not work correctly')
 end
 ```
 
@@ -45,7 +45,7 @@ TS-Lib embeds an interval helper to simplify repeating callbacks:
 
 ```lua
 local id = TS.Intervals.Set(function()
-    TS.DebugPrint('Still alive')
+    Utils.DebugPrint('Still alive')
 end, 5000)
 
 -- later
@@ -56,7 +56,7 @@ TS.Intervals.Clear(id)
 
 ## UI helpers
 
-TS-Lib also exposes small, framework-agnostic UI helpers through `TS.Lib.*`.  
+TS-Lib exposes small, framework-agnostic UI helpers through `TS.Lib.*`.  
 These are rendered via the bundled NUI (`ui/build`).
 
 ### Subtitle
@@ -110,6 +110,106 @@ exports['ts-lib']:SendTextUI('Press E to open garage', 'top-center')
 exports['ts-lib']:HideTextUI()
 ```
 
+### Text Input
+
+- `TS.Lib.TextInput(data: table): table`
+
+Opens a NUI-based text input dialog and returns the user's input.
+
+```lua
+local result = TS.Lib.TextInput({
+    title = "Enter Vehicle Plate",
+    placeholder = "ABC 123",
+    type = "text",  -- "text", "number", or "password"
+    value = ""
+})
+
+if result.receivedData then
+    if result.hasCanceled then
+        print("User canceled")
+    else
+        print("Entered:", result.data)
+    end
+end
+```
+
+Or via exports:
+
+```lua
+local result = exports['ts-lib']:TextInput({
+    title = "Enter Vehicle Plate",
+    placeholder = "ABC 123",
+    type = "text"
+})
+```
+
+---
+
+## Command System
+
+TS-Lib provides a unified command registration system with built-in type validation and permission support.
+
+- `TS.Lib.Command.add(commandName, properties, callback)`
+
+```lua
+TS.Lib.Command.add('givecar', {
+    help = 'Give a car to a player',
+    params = {
+        { name = 'playerId', help = 'Target player ID', type = 'playerId' },
+        { name = 'model', help = 'Vehicle model name', type = 'string' },
+    },
+    restricted = 'admin'  -- Can be boolean, string, or table of groups
+}, function(source, args, raw)
+    print(('Admin %d gave %s to player %d'):format(source, args.model, args.playerId))
+end)
+```
+
+### Parameter Types
+
+| Type | Description |
+|------|-------------|
+| `number` | Converts argument to a number |
+| `playerId` | Accepts 'me' or player ID; validates player exists |
+| `string` | Ensures argument is not a number |
+| `longString` | Captures all remaining text (must be last parameter) |
+| `boolean` | Accepts `true`/`false`, `yes`/`no`, `1`/`0`, `on`/`off` |
+
+---
+
+## Server Utilities
+
+### Update Checker
+
+- `TS.CheckUpdate(versionUrl, changelogUrl?)`
+
+Checks for updates by fetching a version JSON from a remote URL. Shows a formatted console box if outdated.
+
+```lua
+-- In your script after including ts-lib
+TS.CheckUpdate(
+    'https://raw.githubusercontent.com/yourname/yourscript/main/version.json',
+    'https://docs.toine.me/scripts/your-script/changelog'
+)
+```
+
+The version JSON should look like:
+```json
+{ "version": "1.0.7" }
+```
+
+### Bridge Helpers
+
+- `TS.Bridge.GetPlayers(): table` - Returns a list of player sources
+- `TS.Bridge.HasPermission(source, permission): boolean` - Checks if player has a permission (uses framework bridge or ACE as fallback)
+
+```lua
+-- Get all players
+local players = TS.Bridge.GetPlayers()
+
+-- Check permission
+local canSpawn = TS.Bridge.HasPermission(source, 'admin')
+```
+
 ---
 
 ## Bridges overview
@@ -119,12 +219,14 @@ The main reason to use TS-Lib is its **bridge** modules. They expose normalized 
 - `Bridge.Framework.*` → talks to your **framework** (QBCore / ESX / QBox / standalone)
 - `Bridge.Garages.*` → talks to your **garage** script
 - `Bridge.VehicleKeys.*` → talks to your **vehicle keys** script
+- `Bridge.Notify.*` → unified **notification** system
 
 Each bridge has its own dedicated page with full details:
 
 - [Framework Bridge](/scripts/ts-lib/bridges-framework)
 - [Garage Bridges](/scripts/ts-lib/bridges-garages)
 - [Vehicle Keys Bridges](/scripts/ts-lib/bridges-vehiclekeys)
+- [Notify Bridge](/scripts/ts-lib/bridges-notify)
 
 Below are the patterns you will most often use from a script that depends on TS-Lib.
 
@@ -146,12 +248,19 @@ if ok then
 end
 ```
 
+- `Bridge.Framework.Client.Functions.Notify(message, type?)`
+
+```lua
+Bridge.Framework.Client.Functions.Notify('Saved vehicle successfully', 'success')
+```
+
 ### Server
 
 - `Bridge.Framework.Server.Functions.GetPlayerJob(source)`
 - `Bridge.Framework.Server.Functions.GetPlayersByJobName(jobName, checkOnDuty?)`
 - `Bridge.Framework.Server.Functions.GetPlayers()`
 - `Bridge.Framework.Server.Functions.GetVehicleType(model)`
+- `Bridge.Framework.Server.Functions.HasPermission(source, permission)`
 
 See [Framework Bridge](/scripts/ts-lib/bridges-framework) for framework-specific notes and event names.
 
@@ -189,7 +298,31 @@ The keys bridge focuses on **locking / unlocking** vehicles from a unified entry
 Bridge.VehicleKeys.Client.Functions.SetDoorStatus(vehicle, 2) -- 2 = locked
 ```
 
-Lock states follow GTA’s native semantics (`1` = unlocked, `2` = locked, `4` = locked for all players, etc.).
+Lock states follow GTA's native semantics (`1` = unlocked, `2` = locked, `4` = locked for all players, etc.).
 
 See [Vehicle Keys Bridges](/scripts/ts-lib/bridges-vehiclekeys) for system-specific behavior (`qb-vehiclekeys`, `qs-vehiclekeys`, `standalone`).
+
+---
+
+## Notify bridge (quick reference)
+
+The notify bridge provides a unified way to send notifications across different frameworks.
+
+### Client
+
+- `Bridge.Notify.Client.Functions.Notify(message, type?)`
+
+```lua
+-- Show a success notification
+Bridge.Notify.Client.Functions.Notify('Vehicle saved successfully', 'success')
+
+-- Show an error notification
+Bridge.Notify.Client.Functions.Notify('Vehicle not found', 'error')
+```
+
+Supported types vary by framework:
+- **QBCore**: `success`, `error`, `warning`, `info` (or any custom type)
+- **ESX**: Uses ESX notification system
+
+See [Notify Bridge](/scripts/ts-lib/bridges-notify) for more details.
 

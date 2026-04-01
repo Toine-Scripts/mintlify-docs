@@ -25,10 +25,14 @@ It is designed to be injected dynamically into any script, keeping your resource
 
 - **Automated Framework Detection**: Natively supports `qb-core`, `qbx_core`, `es_extended`, and `standalone`. It prioritizes the most modern framework available automatically or via forced config.
 - **Unified Bridges**:
+  - **Framework**: Native support for `qb-core`, `es_extended`, `qbx_core`, and `standalone`.
   - **Garages**: Native support for `qb-garages`, `esx_garage`, `vms_garagesv2`, `jg-advancedgarages`, and `standalone`.
   - **Keys**: Native support for `qb-vehiclekeys`, `qs-vehiclekeys`, and `standalone`.
-- **Centralized Utils**: Prints, debugs, and resource checks are completely centralized (`TS.Print`, `TS.DebugPrint`, `TS.ErrorPrint`).
-- **Built-in UI helpers**: Simple NUI-based subtitle and text UI helpers (`TS.Lib.Subtitle`, `TS.Lib.TextUI`) that can also be called via exports.
+  - **Notify**: Native support for framework notifications (QBCore/ESX) with unified API.
+- **Centralized Utils**: Prints, debugs, and resource checks are completely centralized (`Utils.Print`, `Utils.DebugPrint`, `Utils.ErrorPrint`, `Utils.SuccessPrint`).
+- **Built-in UI helpers**: Simple NUI-based subtitle, text UI, and text input helpers (`TS.Lib.Subtitle`, `TS.Lib.TextUI`, `TS.Lib.TextInput`) that can also be called via exports.
+- **Command System**: Built-in command registration with type validation and permission support (`TS.Lib.Command.add`).
+- **Update Checker**: Automatic update checking for Toine Scripts resources (`TS.CheckUpdate`).
 
 ---
 
@@ -41,7 +45,7 @@ Integrating `ts-lib` into your own scripts is incredibly simple.
 
 ```lua
 shared_scripts {
-    '@ts-lib/imports.lua',
+    '@ts-lib/import.lua',
     -- Your other shared scripts...
 }
 ```
@@ -67,6 +71,16 @@ Config = {
     -- Vehicle keys system: 'auto', 'qb-vehiclekeys', 'qs-vehiclekeys', 'standalone'
     VehicleKeys = 'auto',
 
+    -- Notification system: 'auto', 'qbcore', 'esx'
+    Notify = 'auto',
+
+    -- zUI compatibility fix for text input (set to true if using zUI-v2)
+    zUIFix = true,
+
+    -- URLs for automatic update checking
+    UpdateCheckURL = 'https://raw.githubusercontent.com/toine-scripts/ts-lib/main/version.json',
+    UpdateCheckChangelogURL = 'https://docs.toine.me/scripts/ts-lib/changelog',
+
     Data = {
         Framework = {
             qbcore = 'qb-core',
@@ -85,6 +99,10 @@ Config = {
             ['qb-vehiclekeys'] = 'qb-vehiclekeys',
             ['qs-vehiclekeys'] = 'qs-vehiclekeys',
             ['standalone']     = 'standalone',
+        },
+        Notify = {
+            qbcore = 'qb-core',
+            esx = 'esx_notify',
         },
     },
 }

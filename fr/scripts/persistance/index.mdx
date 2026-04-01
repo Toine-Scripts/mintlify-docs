@@ -1,51 +1,111 @@
----
-title: "Vue d’ensemble"
-description: "Gardez vos véhicules exactement où ils doivent être."
-icon: "car-side"
----
-Cette ressource permet aux véhicules de rester persistants dans le monde et de rester là où ils ont été laissés.
-Elle s’appuie sur **ox_lib** pour lire et appliquer les propriétés des véhicules.
-
-<CardGroup cols={1}>
-    <Card title="Installation" icon="download" href="/fr/scripts/persistance/installation">
-        Guide d’installation disponible ici.
-    </Card>
-</CardGroup>
-
-
-## Structure des fichiers
-<Tree>
-    <Tree.Folder name="bridge" defaultOpen>
-      <Tree.Folder name="plugins" defaultOpen>
-        <Tree.File name="VehicleDeformation.lua *" />
-      </Tree.Folder>
-    </Tree.Folder>
-    <Tree.Folder name="client" defaultOpen>
-      <Tree.File name="bridge.lua" />
-      <Tree.File name="functions.lua" />
-      <Tree.File name="init.lua" />
-      <Tree.File name="main.lua" />
-      <Tree.File name="utils.lua" />
-    </Tree.Folder>
-
-    <Tree.Folder name="server" defaultOpen>
-      <Tree.File name="bridge.lua" />
-      <Tree.File name="db.lua" />
-      <Tree.File name="events.lua" />
-      <Tree.File name="init.lua" />
-      <Tree.File name="main.lua" />
-      <Tree.File name="utils.lua" />
-    </Tree.Folder>
-    <Tree.Folder name="shared" defaultOpen>
-      <Tree.File name="config.lua *" />
-      <Tree.File name="events.lua *" />
-    </Tree.Folder>
-    <Tree.File name="fxmanifest.lua" />
-</Tree>
-
-## Fichiers ouverts
-Certains fichiers sont « ouverts » : vous pouvez les modifier pour adapter le script à votre serveur. Les fichiers marqués `*` dans l’arborescence ci-dessus sont ouverts.
-
-## Développeurs
-
-Si vous êtes développeur et souhaitez interagir avec le système de persistance, consultez la page [Exports](/fr/scripts/persistance/exports/client).
+---
+
+title: "Vue d'ensemble"
+
+description: "Gardez vos véhicules exactement où ils doivent être."
+
+icon: "car-side"
+
+---
+
+Cette ressource permet aux véhicules de rester persistants dans le monde et de rester là où ils ont été laissés.
+
+Elle s'appuie sur **ox_lib** pour lire et appliquer les propriétés des véhicules.
+
+
+
+<CardGroup cols={1}>
+
+    <Card title="Installation" icon="download" href="/fr/scripts/persistance/installation">
+
+        Guide d'installation disponible ici.
+
+    </Card>
+
+</CardGroup>
+
+
+
+
+
+## Structure des fichiers
+
+<Tree>
+
+    <Tree.Folder name="bridge" defaultOpen>
+
+      <Tree.Folder name="plugins" defaultOpen>
+
+        <Tree.File name="VehicleDeformation.lua *" />
+
+      </Tree.Folder>
+
+    </Tree.Folder>
+
+    <Tree.Folder name="client" defaultOpen>
+
+      <Tree.File name="bridge.lua" />
+
+      <Tree.File name="config.client.lua" />
+
+      <Tree.File name="exports.lua" />
+
+      <Tree.File name="functions.lua" />
+
+      <Tree.File name="init.lua" />
+
+      <Tree.File name="main.lua" />
+
+      <Tree.File name="utils.lua" />
+
+    </Tree.Folder>
+
+
+
+    <Tree.Folder name="server" defaultOpen>
+
+      <Tree.File name="bridge.lua" />
+
+      <Tree.File name="commands.lua" />
+
+      <Tree.File name="config.server.lua" />
+
+      <Tree.File name="db.lua" />
+
+      <Tree.File name="events.lua" />
+
+      <Tree.File name="exports.lua" />
+
+      <Tree.File name="init.lua" />
+
+      <Tree.File name="main.lua" />
+
+      <Tree.File name="utils.lua" />
+
+    </Tree.Folder>
+
+    <Tree.Folder name="shared" defaultOpen>
+
+      <Tree.File name="config.lua *" />
+
+      <Tree.File name="events.lua *" />
+
+    </Tree.Folder>
+
+    <Tree.File name="fxmanifest.lua" />
+
+</Tree>
+
+
+
+## Fichiers ouverts
+
+Certains fichiers sont « ouverts » : vous pouvez les modifier pour adapter le script à votre serveur. Les fichiers marqués `*` dans l'arborescence ci-dessus sont ouverts.
+
+
+
+## Développeurs
+
+
+
+Si vous êtes développeur et souhaitez interagir avec le système de persistance, consultez la page [Exports](/fr/scripts/persistance/exports/client).

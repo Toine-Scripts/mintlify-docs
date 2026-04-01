@@ -1,0 +1,153 @@
+---
+title: "Notify Bridge"
+description: "Unified notification system for QBCore, ESX, and standalone."
+icon: "bell"
+---
+
+The **notify bridge** provides a simple, unified way to display notifications across different frameworks. Instead of writing framework-specific notification code, you call `Bridge.Notify.Client.Functions.Notify` and let TS-Lib route it to the correct implementation.
+
+```lua
+-- Client
+Bridge.Notify.Client
+Bridge.Notify.Client.Functions
+```
+
+---
+
+## Status & testing
+
+
+| Notification |   Status    |      Tested by |
+| :----------- | :---------: | -------------: |
+| `qbcore`     | **Tested**  |         Toine  |
+| `esx`        | **Tested**  |         Toine  |
+| `standalone` | Supported via framework fallback | N/A |
+
+---
+
+## How selection works
+
+Supported values in `ts-lib/config.lua`:
+
+- **Notify keys**: `qbcore`, `esx`, `standalone`
+- Mapped to resource names via `Config.Data.Notify`:
+
+```lua
+Config.Data.Notify = {
+  qbcore = 'qb-core',
+  esx    = 'esx_notify',
+}
+```
+
+When `Config.Notify = 'auto'`, TS-Lib goes through this table and picks the **first started resource**.
+
+---
+
+## Client-side API
+
+### `Bridge.Notify.Client.Functions.Notify(message, type?)`
+
+Displays a notification to the player.
+
+```lua
+-- Simple notification
+Bridge.Notify.Client.Functions.Notify('Vehicle saved successfully')
+
+-- With notification type
+Bridge.Notify.Client.Functions.Notify('Vehicle not found', 'error')
+
+-- Success notification
+Bridge.Notify.Client.Functions.Notify('Welcome to the server!', 'success')
+```
+
+#### Behavior per framework
+
+**QBCore**
+
+Uses `QBCore.Functions.Notify`:
+
+```lua
+Bridge.Notify.Client.Functions.Notify = function(message, type)
+    return QBCore.Functions.Notify(message, type)
+end
+```
+
+Common types: `success`, `error`, `warning`, `info`
+
+**ESX**
+
+Uses `ESX.ShowNotification`:
+
+```lua
+Bridge.Notify.Client.Functions.Notify = function(message, type)
+    return ESX.ShowNotification(message, type)
+end
+```
+
+**Standalone**
+
+Currently falls back to basic print or can be extended. The notify bridge is primarily designed to work with framework notification systems.
+
+---
+
+## Server to Client notifications
+
+TS-Lib provides an event that can be triggered from the server to show notifications to clients:
+
+```lua
+-- From server-side
+TriggerClientEvent('ts-lib:client:bridge:Notify', playerSource, 'Your vehicle is ready', 'success')
+```
+
+This is automatically registered when using the QBCore bridge and can be extended for other frameworks.
+
+---
+
+## Using via TS.Lib helpers
+
+When using `@ts-lib/import.lua`, you can also access notifications through the framework bridge:
+
+```lua
+-- From client script with ts-lib imported
+Bridge.Framework.Client.Functions.Notify('Hello from TS-Lib!', 'info')
+```
+
+This provides the same unified API while being part of the framework bridge surface.
+
+---
+
+## Integration in your own scripts
+
+### Basic usage
+
+```lua
+-- At the top of your client script
+local TS = TS or {}
+
+-- Example: Show notification when entering a zone
+CreateThread(function()
+    while true do
+        Wait(1000)
+        local coords = GetEntityCoords(PlayerPedId())
+        local distance = #(coords - vector3(215.0, -809.0, 30.7))
+        
+        if distance < 10.0 then
+            Bridge.Notify.Client.Functions.Notify('You are near the garage', 'info')
+            Wait(5000) -- Wait before showing again
+        end
+    end
+end)
+```
+
+### With exports (without import)
+
+If you haven't included `@ts-lib/import.lua`, you can still use framework exports directly:
+
+```lua
+-- Direct framework call (not using the bridge)
+TriggerEvent('QBCore:Notify', 'Hello', 'success')
+-- or
+ESX.ShowNotification('Hello')
+```
+
+For full TS-Lib functionality, we recommend using the import method.

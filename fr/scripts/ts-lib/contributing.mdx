@@ -4,20 +4,21 @@ description: "Comment étendre TS-Lib et ses ponts en toute sécurité."
 icon: "hands-holding-circle"
 ---
 
-TS-Lib alimente plusieurs scripts Toine et centralise les intégrations **framework / garage / clés véhicule**.  
-Les contributions sont les bienvenues, notamment pour de nouveaux ponts, des correctifs et des améliorations d’ergonomie.
+TS-Lib alimente plusieurs scripts Toine et centralise les intégrations **framework / garage / clés véhicule / notifications**.
+Les contributions sont les bienvenues, notamment pour de nouveaux ponts, des correctifs et des améliorations d'ergonomie.
 
 ---
 
 ## Quels types de contribution ?
 
 - **Nouveaux ponts**
-  - Support d’un autre framework ou fork (fork `qbcore`, build ESX custom, etc.).
-  - Support d’un autre système de garage.
-  - Support d’un autre système de clés.
+  - Support d'un autre framework ou fork (fork `qbcore`, build ESX custom, etc.).
+  - Support d'un autre système de garage.
+  - Support d'un autre système de clés.
+  - Support d'un autre système de notifications.
 
 - **Amélioration des ponts existants**
-  - Gestion d’erreurs et validation des entrées plus robustes.
+  - Gestion d'erreurs et validation des entrées plus robustes.
   - Meilleurs logs quand une dépendance manque ou est mal configurée.
   - Petites optimisations perfs ou BDD sans changer le comportement.
 
@@ -30,27 +31,28 @@ Les contributions sont les bienvenues, notamment pour de nouveaux ponts, des cor
 ## Principes de conception
 
 - **Responsabilité unique**
-  - TS-Lib doit rester petit et ciblé. Ce n’est *pas* un framework et ne remplace pas vos bibliothèques utilitaires.
+  - TS-Lib doit rester petit et ciblé. Ce n'est *pas* un framework et ne remplace pas vos bibliothèques utilitaires.
 
-- **Les ponts d’abord**
+- **Les ponts d'abord**
   - La logique spécifique au framework vit dans :
     - `Bridge.Framework.*`
     - `Bridge.Garages.*`
     - `Bridge.VehicleKeys.*`
+    - `Bridge.Notify.*`
 
 - **Piloté par la configuration**
   - Les nouvelles intégrations passent par `ts-lib/config.lua` :
-    - Ajouter une clé dans `Config.Data.Framework`, `Config.Data.Garages` ou `Config.Data.VehicleKeys`.
+    - Ajouter une clé dans `Config.Data.Framework`, `Config.Data.Garages`, `Config.Data.VehicleKeys`, ou `Config.Data.Notify`.
     - Ne pas coder en dur les noms de ressources hors de cette config.
 
 - **Dégradation propre**
-  - Si la ressource cible n’est pas démarrée ou est mal configurée :
+  - Si la ressource cible n'est pas démarrée ou est mal configurée :
     - Logger clairement avec `TS.ErrorPrint`.
     - Échouer proprement sans faire planter les autres scripts.
 
 ---
 
-## Ajouter un nouveau pont (vue d’ensemble)
+## Ajouter un nouveau pont (vue d'ensemble)
 
 1. **Étendre la config**
 
@@ -60,7 +62,7 @@ Les contributions sont les bienvenues, notamment pour de nouveaux ponts, des cor
    Config.Data.Garages['my-garage'] = 'my-garage-resource-name'
    ```
 
-   Pour les frameworks ou les clés, utilisez `Config.Data.Framework` ou `Config.Data.VehicleKeys`.
+   Pour les frameworks, clés ou notifications, utilisez `Config.Data.Framework`, `Config.Data.VehicleKeys` ou `Config.Data.Notify`.
 
 2. **Créer les fichiers du pont**
 
@@ -69,6 +71,7 @@ Les contributions sont les bienvenues, notamment pour de nouveaux ponts, des cor
    - Frameworks : `shared/bridge/framework/<name>/shared.lua|client.lua|server.lua`
    - Garages : `shared/bridge/garages/<name>/shared.lua|client.lua|server.lua`
    - Clés : `shared/bridge/vehiclekeys/<name>/shared.lua|client.lua|server.lua`
+   - Notifications : `shared/bridge/notify/<name>/client.lua` (généralement côté client uniquement)
 
 3. **Implémenter les fonctions requises**
 
@@ -79,18 +82,21 @@ Les contributions sont les bienvenues, notamment pour de nouveaux ponts, des cor
    - Pour les clés véhicule :
      - `Bridge.VehicleKeys.Client.Functions.SetDoorStatus(entity, lockStatus)`
 
+   - Pour les notifications :
+     - `Bridge.Notify.Client.Functions.Notify(message, type?)`
+
    - Pour les frameworks :
      - Voir [Pont Framework](/fr/scripts/ts-lib/bridges-framework) pour la surface attendue.
 
-4. **Protéger l’absence de ressources**
+4. **Protéger l'absence de ressources**
 
-   - Utilisez `TS.Utils.IsRessourceLoaded` (ou des natives FiveM) avant d’appeler d’autres ressources.
-   - Loggez des messages utiles si quelque chose n’est pas démarré ou est mal configuré.
+   - Utilisez `TS.Utils.IsRessourceLoaded` (ou des natives FiveM) avant d'appeler d'autres ressources.
+   - Loggez des messages utiles si quelque chose n'est pas démarré ou est mal configuré.
 
 5. **Mettre à jour la doc**
 
    - Ajoutez votre pont dans la section « Systèmes pris en charge » concernée.
-   - Mettez à jour le tableau « Statut et tests » avec l’état initial (souvent `Expérimental`) et, si besoin, votre pseudo.
+   - Mettez à jour le tableau « Statut et tests » avec l'état initial (souvent `Expérimental`) et, si besoin, votre pseudo.
 
 ---
 
@@ -103,11 +109,11 @@ Les contributions sont les bienvenues, notamment pour de nouveaux ponts, des cor
    - Évitez les refactors hors sujet dans la même PR.
 4. **Testez** sur au moins une combinaison réelle framework / garage / clés.
 5. Ouvrez une **pull request** :
-   - Décrivez le problème et l’approche.
+   - Décrivez le problème et l'approche.
    - Listez les ressources externes (noms + versions si possible).
    - Joignez logs ou captures si utile.
 
-En cas de doute sur la pertinence d’une idée, ouvrez une discussion ou contactez le support sur [Discord](https://store.toine.me/discord).
+En cas de doute sur la pertinence d'une idée, ouvrez une discussion ou contactez le support sur [Discord](https://store.toine.me/discord).
 
 ---
 
@@ -120,7 +126,7 @@ En cas de doute sur la pertinence d’une idée, ouvrez une discussion ou contac
     - Étapes de reproduction et, si possible, un repro minimal.
 
 - **Demandes de fonctionnalités**
-  - Partez du **cas d’usage** (ex. « Je veux supporter le garage X ») plutôt que d’un nom de fonction.
+  - Partez du **cas d'usage** (ex. « Je veux supporter le garage X ») plutôt que d'un nom de fonction.
   - Souvent la meilleure réponse est un petit helper générique utilisable par plusieurs scripts.
 
 Vous pouvez tout envoyer via le [Discord](https://store.toine.me/discord).

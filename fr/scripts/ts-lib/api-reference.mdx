@@ -4,7 +4,7 @@ description: "Référence pratique des utilitaires et ponts TS-Lib."
 icon: "book"
 ---
 
-Cette page donne une **vue d’ensemble pratique** de ce que TS-Lib expose à l’exécution une fois `@ts-lib/import.lua` inclus dans votre ressource.
+Cette page donne une **vue d'ensemble pratique** de ce que TS-Lib expose à l'exécution une fois `@ts-lib/import.lua` inclus dans votre ressource.
 
 ---
 
@@ -14,38 +14,38 @@ TS-Lib attache quelques helpers à une table globale `TS`, réutilisés dans les
 
 ### Journalisation
 
-- `TS.Print(message, resourceName?)`
-- `TS.DebugPrint(message, resourceName?)`
-- `TS.ErrorPrint(message, resourceName?)`
-- `TS.SuccessPrint(message, resourceName?)`
+- `Utils.Print(message, resourceName?)`
+- `Utils.DebugPrint(message, resourceName?)`
+- `Utils.ErrorPrint(message, resourceName?)`
+- `Utils.SuccessPrint(message, resourceName?)`
 
 ```lua
-TS.DebugPrint('Mon script a démarré', GetCurrentResourceName())
+Utils.DebugPrint('Mon script a démarré', GetCurrentResourceName())
 ```
 
 ### Utilitaires génériques
 
 Exemples de helpers courants :
 
-- `TS.Utils.IsRessourceLoaded(resourceName): boolean`
-- `TS.Utils.IsTableEmpty(tbl): boolean`
+- `Utils.IsRessourceLoaded(resourceName): boolean`
+- `Utils.IsTableEmpty(tbl): boolean`
 
 ```lua
-if not TS.Utils.IsRessourceLoaded('qb-core') then
-    TS.ErrorPrint('qb-core est manquant, les ponts TS-Lib ne fonctionneront pas correctement')
+if not Utils.IsRessourceLoaded('qb-core') then
+    Utils.ErrorPrint('qb-core est manquant, les ponts TS-Lib ne fonctionneront pas correctement')
 end
 ```
 
 ### Intervalles
 
-TS-Lib embarque un helper d’intervalles pour simplifier les callbacks répétés :
+TS-Lib embarque un helper d'intervalles pour simplifier les callbacks répétés :
 
 - `TS.Intervals.Set(callback, ms, ...): id`
 - `TS.Intervals.Clear(id)`
 
 ```lua
 local id = TS.Intervals.Set(function()
-    TS.DebugPrint('Toujours actif')
+    Utils.DebugPrint('Toujours actif')
 end, 5000)
 
 -- plus tard
@@ -56,7 +56,7 @@ TS.Intervals.Clear(id)
 
 ## Helpers UI
 
-TS-Lib expose aussi de petits helpers UI agnostiques du framework via `TS.Lib.*`.  
+TS-Lib expose des helpers UI agnostiques du framework via `TS.Lib.*`.
 Ils sont rendus via le NUI intégré (`ui/build`).
 
 ### Sous-titre
@@ -82,7 +82,7 @@ exports['ts-lib']:SendSubtitle('Appuyez sur E pour interagir')
 exports['ts-lib']:HideSubtitle()
 ```
 
-### Text UI (texte d’aide)
+### Text UI (texte d'aide)
 
 - `TS.Lib.TextUI.Show(text: string, position?: string)`
 - `TS.Lib.TextUI.Hide()`
@@ -110,21 +110,123 @@ exports['ts-lib']:SendTextUI('Appuyez sur E pour ouvrir le garage', 'top-center'
 exports['ts-lib']:HideTextUI()
 ```
 
+### Text Input (input texte)
+
+- `TS.Lib.TextInput(data: table): table`
+
+Ouvre une boîte de dialogue NUI pour la saisie texte et retourne la valeur entrée par l'utilisateur.
+
+```lua
+local result = TS.Lib.TextInput({
+    title = "Entrez la plaque du véhicule",
+    placeholder = "ABC 123",
+    type = "text",  -- "text", "number", ou "password"
+    value = ""
+})
+
+if result.receivedData then
+    if result.hasCanceled then
+        print("Utilisateur a annulé")
+    else
+        print("Entrée:", result.data)
+    end
+end
+```
+
+Ou via exports :
+
+```lua
+local result = exports['ts-lib']:TextInput({
+    title = "Entrez la plaque du véhicule",
+    placeholder = "ABC 123",
+    type = "text"
+})
+```
+
 ---
 
-## Vue d’ensemble des ponts
+## Système de commandes
 
-L’intérêt principal de TS-Lib est ses modules **pont**. Ils exposent des API normalisées qui cachent les détails propres au framework ou au script.
+TS-Lib fournit un système unifié d'enregistrement de commandes avec validation de type intégrée et support des permissions.
+
+- `TS.Lib.Command.add(nomCommande, proprietes, callback)`
+
+```lua
+TS.Lib.Command.add('givecar', {
+    help = 'Donner une voiture à un joueur',
+    params = {
+        { name = 'playerId', help = 'ID du joueur cible', type = 'playerId' },
+        { name = 'model', help = 'Nom du modèle de véhicule', type = 'string' },
+    },
+    restricted = 'admin'  -- Peut être boolean, string, ou table de groupes
+}, function(source, args, raw)
+    print(('Admin %d a donné %s au joueur %d'):format(source, args.model, args.playerId))
+end)
+```
+
+### Types de paramètres
+
+| Type | Description |
+|------|-------------|
+| `number` | Convertit l'argument en nombre |
+| `playerId` | Accepte 'me' ou l'ID joueur; valide que le joueur existe |
+| `string` | S'assure que l'argument n'est pas un nombre |
+| `longString` | Capture tout le texte restant (doit être le dernier paramètre) |
+| `boolean` | Accepte `true`/`false`, `yes`/`no`, `1`/`0`, `on`/`off` |
+
+---
+
+## Utilitaires serveur
+
+### Vérificateur de mises à jour
+
+- `TS.CheckUpdate(versionUrl, changelogUrl?)`
+
+Vérifie les mises à jour en récupérant un JSON de version depuis une URL distante. Affiche une boîte formatée dans la console si obsolète.
+
+```lua
+-- Dans votre script après avoir inclus ts-lib
+TS.CheckUpdate(
+    'https://raw.githubusercontent.com/votrenom/votrescript/main/version.json',
+    'https://docs.toine.me/scripts/votre-script/changelog'
+)
+```
+
+Le JSON de version doit ressembler à :
+```json
+{ "version": "1.0.7" }
+```
+
+### Helpers de pont
+
+- `TS.Bridge.GetPlayers(): table` - Retourne une liste des sources des joueurs
+- `TS.Bridge.HasPermission(source, permission): boolean` - Vérifie si le joueur a une permission (utilise le pont framework ou ACE en fallback)
+
+```lua
+-- Récupérer tous les joueurs
+local players = TS.Bridge.GetPlayers()
+
+-- Vérifier la permission
+local canSpawn = TS.Bridge.HasPermission(source, 'admin')
+```
+
+---
+
+## Vue d'ensemble des ponts
+
+L'intérêt principal de TS-Lib est ses modules **pont**. Ils exposent des API normalisées qui cachent les détails propres au framework ou au script.
 
 - `Bridge.Framework.*` → dialogue avec votre **framework** (QBCore / ESX / QBox / standalone)
 - `Bridge.Garages.*` → dialogue avec votre script de **garage**
 - `Bridge.VehicleKeys.*` → dialogue avec votre script de **clés véhicule**
+- `Bridge.Notify.*` → système de **notifications** unifié
 
 Chaque pont a sa page dédiée :
 
 - [Pont Framework](/fr/scripts/ts-lib/bridges-framework)
 - [Ponts Garage](/fr/scripts/ts-lib/bridges-garages)
 - [Ponts Clés véhicule](/fr/scripts/ts-lib/bridges-vehiclekeys)
+- [Pont Notifications](/fr/scripts/ts-lib/bridges-notify)
 
 Ci-dessous les usages les plus courants depuis un script dépendant de TS-Lib.
 
@@ -134,7 +236,7 @@ Ci-dessous les usages les plus courants depuis un script dépendant de TS-Lib.
 
 ### Client
 
-- `Bridge.Framework.Client.PlayerData`  
+- `Bridge.Framework.Client.PlayerData`
   Données joueur unifiées, mises à jour automatiquement au chargement / déchargement / changement de métier.
 
 - `Bridge.Framework.Client.Functions.GetPlayerJob() -> ok, jobOrError`
@@ -146,14 +248,21 @@ if ok then
 end
 ```
 
+- `Bridge.Framework.Client.Functions.Notify(message, type?)`
+
+```lua
+Bridge.Framework.Client.Functions.Notify('Véhicule sauvegardé avec succès', 'success')
+```
+
 ### Serveur
 
 - `Bridge.Framework.Server.Functions.GetPlayerJob(source)`
 - `Bridge.Framework.Server.Functions.GetPlayersByJobName(jobName, checkOnDuty?)`
 - `Bridge.Framework.Server.Functions.GetPlayers()`
 - `Bridge.Framework.Server.Functions.GetVehicleType(model)`
+- `Bridge.Framework.Server.Functions.HasPermission(source, permission)`
 
-Voir [Pont Framework](/fr/scripts/ts-lib/bridges-framework) pour les détails par framework et les noms d’événements.
+Voir [Pont Framework](/fr/scripts/ts-lib/bridges-framework) pour les détails par framework et les noms d'événements.
 
 ---
 
@@ -178,7 +287,7 @@ Voir [Ponts Garage](/fr/scripts/ts-lib/bridges-garages) pour le comportement exa
 
 ## Pont clés véhicule (rappel rapide)
 
-Le pont clés se concentre sur le **verrouillage / déverrouillage** depuis un point d’entrée unique.
+Le pont clés se concentre sur le **verrouillage / déverrouillage** depuis un point d'entrée unique.
 
 ### Client
 
@@ -192,3 +301,27 @@ Bridge.VehicleKeys.Client.Functions.SetDoorStatus(vehicle, 2) -- 2 = verrouillé
 Les états suivent la sémantique des natives GTA (`1` = déverrouillé, `2` = verrouillé, `4` = verrouillé pour tous les joueurs, etc.).
 
 Voir [Ponts Clés véhicule](/fr/scripts/ts-lib/bridges-vehiclekeys) pour le comportement par système (`qb-vehiclekeys`, `qs-vehiclekeys`, `standalone`).
+
+---
+
+## Pont notifications (rappel rapide)
+
+Le pont notifications fournit un moyen unifié d'envoyer des notifications entre différents frameworks.
+
+### Client
+
+- `Bridge.Notify.Client.Functions.Notify(message, type?)`
+
+```lua
+-- Afficher une notification de succès
+Bridge.Notify.Client.Functions.Notify('Véhicule sauvegardé avec succès', 'success')
+
+-- Afficher une notification d'erreur
+Bridge.Notify.Client.Functions.Notify('Véhicule non trouvé', 'error')
+```
+
+Types supportés selon le framework :
+- **QBCore** : `success`, `error`, `warning`, `info` (ou tout type personnalisé)
+- **ESX** : Utilise le système de notification ESX
+
+Voir [Pont Notifications](/fr/scripts/ts-lib/bridges-notify) pour plus de détails.

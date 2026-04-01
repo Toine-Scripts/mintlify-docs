@@ -4,7 +4,7 @@ description: "How to safely extend TS-Lib and its bridges."
 icon: "hands-holding-circle"
 ---
 
-TS-Lib powers multiple Toine Scripts and centralizes all **framework / garage / vehicle keys** integrations.  
+TS-Lib powers multiple Toine Scripts and centralizes all **framework / garage / vehicle keys / notify** integrations.  
 Contributions are welcome, especially around new bridges, bug fixes and quality-of-life improvements.
 
 ---
@@ -15,11 +15,12 @@ Contributions are welcome, especially around new bridges, bug fixes and quality-
   - Support for another framework or a fork (`qbcore` fork, custom ESX build, etc.).
   - Support for another garage system.
   - Support for another keys system.
+  - Support for another notification system.
 
 - **Improvements to existing bridges**
   - More robust error handling and input validation.
   - Better logging when a dependency is missing or misconfigured.
-  - Small performance or DB optimizations that don’t change behavior.
+  - Small performance or DB optimizations that don't change behavior.
 
 - **Core utilities**
   - Additional, generic helpers that are clearly reusable across several scripts.
@@ -37,10 +38,11 @@ Contributions are welcome, especially around new bridges, bug fixes and quality-
     - `Bridge.Framework.*`
     - `Bridge.Garages.*`
     - `Bridge.VehicleKeys.*`
+    - `Bridge.Notify.*`
 
 - **Configuration driven**
   - New integrations should be made configurable via `ts-lib/config.lua`:
-    - Add a new key in `Config.Data.Framework`, `Config.Data.Garages` or `Config.Data.VehicleKeys`.
+    - Add a new key in `Config.Data.Framework`, `Config.Data.Garages`, `Config.Data.VehicleKeys`, or `Config.Data.Notify`.
     - Do not hardcode resource names outside of this config.
 
 - **Safe failure**
@@ -60,7 +62,7 @@ Contributions are welcome, especially around new bridges, bug fixes and quality-
    Config.Data.Garages['my-garage'] = 'my-garage-resource-name'
    ```
 
-   Or for frameworks / keys, use `Config.Data.Framework` / `Config.Data.VehicleKeys`.
+   Or for frameworks / keys / notify, use `Config.Data.Framework` / `Config.Data.VehicleKeys` / `Config.Data.Notify`.
 
 2. **Create the bridge files**
 
@@ -69,6 +71,7 @@ Contributions are welcome, especially around new bridges, bug fixes and quality-
    - Frameworks: `shared/bridge/framework/<name>/shared.lua|client.lua|server.lua`
    - Garages: `shared/bridge/garages/<name>/shared.lua|client.lua|server.lua`
    - Keys: `shared/bridge/vehiclekeys/<name>/shared.lua|client.lua|server.lua`
+   - Notify: `shared/bridge/notify/<name>/client.lua` (usually client-side only)
 
 3. **Implement the required functions**
 
@@ -78,6 +81,9 @@ Contributions are welcome, especially around new bridges, bug fixes and quality-
 
    - For vehicle keys:
      - `Bridge.VehicleKeys.Client.Functions.SetDoorStatus(entity, lockStatus)`
+
+   - For notifications:
+     - `Bridge.Notify.Client.Functions.Notify(message, type?)`
 
    - For frameworks:
      - See [Framework Bridge](/scripts/ts-lib/bridges-framework) for the expected surface.
@@ -89,8 +95,8 @@ Contributions are welcome, especially around new bridges, bug fixes and quality-
 
 5. **Update the docs**
 
-   - Add your bridge to the relevant “Supported systems” section.
-   - Update the “Status & testing” table with its initial state (likely `Experimental`) and, if relevant, your nickname.
+   - Add your bridge to the relevant "Supported systems" section.
+   - Update the "Status & testing" table with its initial state (likely `Experimental`) and, if relevant, your nickname.
 
 ---
 
@@ -103,11 +109,11 @@ Contributions are welcome, especially around new bridges, bug fixes and quality-
    - Avoid unrelated refactors in the same PR.
 4. **Test** on at least one real framework / garage / keys combination.
 5. Open a **pull request**:
-   - Describe the problem you’re solving and the approach.
+   - Describe the problem you're solving and the approach.
    - List the external resources involved (names + versions if possible).
    - Link to any relevant logs or screenshots.
 
-If you’re unsure whether an idea fits TS-Lib, you can start by opening a discussion or contacting support on [Discord](https://store.toine.me/discord).
+If you're unsure whether an idea fits TS-Lib, you can start by opening a discussion or contacting support on [Discord](https://store.toine.me/discord).
 
 ---
 
@@ -120,7 +126,7 @@ If you’re unsure whether an idea fits TS-Lib, you can start by opening a discu
     - Steps to reproduce and, if possible, a small reproduction.
 
 - **Feature requests**
-  - Focus on the **use case** (for example, “I want to support X garage system”) rather than a specific function name.
+  - Focus on the **use case** (for example, "I want to support X garage system") rather than a specific function name.
   - Often the best solution is a small, generic helper that works for several scripts.
 
 You can report both via the [Discord](https://store.toine.me/discord).

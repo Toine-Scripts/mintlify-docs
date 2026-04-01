@@ -1,0 +1,153 @@
+---
+title: "Pont Notifications"
+description: "Système de notifications unifié pour QBCore, ESX et standalone."
+icon: "bell"
+---
+
+Le **pont notifications** fournit un moyen simple et unifié d'afficher des notifications entre différents frameworks. Au lieu d'écrire du code spécifique à chaque framework, vous appelez `Bridge.Notify.Client.Functions.Notify` et laissez TS-Lib le router vers la bonne implémentation.
+
+```lua
+-- Client
+Bridge.Notify.Client
+Bridge.Notify.Client.Functions
+```
+
+---
+
+## Statut & tests
+
+
+| Notification |   Statut    |      Testé par |
+| :----------- | :---------: | -------------: |
+| `qbcore`     | **Testé**   |         Toine  |
+| `esx`        | **Testé**   |         Toine  |
+| `standalone` | Supporté via le framework de repli | N/A |
+
+---
+
+## Fonctionnement de la sélection
+
+Valeurs supportées dans `ts-lib/config.lua` :
+
+- **Clés de notification** : `qbcore`, `esx`, `standalone`
+- Mappées aux noms de ressources via `Config.Data.Notify` :
+
+```lua
+Config.Data.Notify = {
+  qbcore = 'qb-core',
+  esx    = 'esx_notify',
+}
+```
+
+Quand `Config.Notify = 'auto'`, TS-Lib parcourt cette table et choisit la **première ressource démarrée**.
+
+---
+
+## API côté client
+
+### `Bridge.Notify.Client.Functions.Notify(message, type?)`
+
+Affiche une notification au joueur.
+
+```lua
+-- Notification simple
+Bridge.Notify.Client.Functions.Notify('Véhicule sauvegardé avec succès')
+
+-- Avec type de notification
+Bridge.Notify.Client.Functions.Notify('Véhicule non trouvé', 'error')
+
+-- Notification de succès
+Bridge.Notify.Client.Functions.Notify('Bienvenue sur le serveur !', 'success')
+```
+
+#### Comportement par framework
+
+**QBCore**
+
+Utilise `QBCore.Functions.Notify` :
+
+```lua
+Bridge.Notify.Client.Functions.Notify = function(message, type)
+    return QBCore.Functions.Notify(message, type)
+end
+```
+
+Types courants : `success`, `error`, `warning`, `info`
+
+**ESX**
+
+Utilise `ESX.ShowNotification` :
+
+```lua
+Bridge.Notify.Client.Functions.Notify = function(message, type)
+    return ESX.ShowNotification(message, type)
+end
+```
+
+**Standalone**
+
+Utilise actuellement un simple print ou peut être étendu. Le pont notifications est principalement conçu pour fonctionner avec les systèmes de notification des frameworks.
+
+---
+
+## Notifications serveur vers client
+
+TS-Lib fournit un événement qui peut être déclenché depuis le serveur pour afficher des notifications aux clients :
+
+```lua
+-- Côté serveur
+TriggerClientEvent('ts-lib:client:bridge:Notify', playerSource, 'Votre véhicule est prêt', 'success')
+```
+
+Ceci est automatiquement enregistré quand vous utilisez le pont QBCore et peut être étendu pour d'autres frameworks.
+
+---
+
+## Utilisation via les helpers TS.Lib
+
+Quand vous utilisez `@ts-lib/import.lua`, vous pouvez aussi accéder aux notifications via le pont framework :
+
+```lua
+-- Depuis un script client avec ts-lib importé
+Bridge.Framework.Client.Functions.Notify('Bonjour de TS-Lib !', 'info')
+```
+
+Ceci fournit la même API unifiée tout en faisant partie de la surface du pont framework.
+
+---
+
+## Intégration dans vos propres scripts
+
+### Utilisation basique
+
+```lua
+-- En haut de votre script client
+local TS = TS or {}
+
+-- Exemple : Afficher une notification en entrant dans une zone
+CreateThread(function()
+    while true do
+        Wait(1000)
+        local coords = GetEntityCoords(PlayerPedId())
+        local distance = #(coords - vector3(215.0, -809.0, 30.7))
+
+        if distance < 10.0 then
+            Bridge.Notify.Client.Functions.Notify('Vous êtes près du garage', 'info')
+            Wait(5000) -- Attendre avant de réafficher
+        end
+    end
+end)
+```
+
+### Avec exports (sans import)
+
+Si vous n'avez pas inclus `@ts-lib/import.lua`, vous pouvez toujours utiliser les exports framework directement :
+
+```lua
+-- Appel framework direct (sans utiliser le pont)
+TriggerEvent('QBCore:Notify', 'Bonjour', 'success')
+-- ou
+ESX.ShowNotification('Bonjour')
+```
+
+Pour une fonctionnalité TS-Lib complète, nous recommandons d'utiliser la méthode d'import.
