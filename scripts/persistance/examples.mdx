@@ -113,6 +113,30 @@ When you delete a vehicle manually using a command, you should remove it from pe
 </Tabs>
 
 
+## Sync door lock status changes
+
+When your keys script locks/unlocks a vehicle, also update `ts-persistence` with:
+
+`exports['ts-persistence']:UpdateDoorStatus(vehicle, status)`
+
+- `status = 2` to lock
+- `status = 1` to unlock
+
+Example with `lfKeys` (same integration pattern for any keys script):
+
+```lua
+if locked == 1 or locked == 0 then
+    -- your lock logic
+    exports['ts-persistence']:UpdateDoorStatus(vehicle, 2)
+elseif locked == 2 then
+    -- your unlock logic
+    exports['ts-persistence']:UpdateDoorStatus(vehicle, 1)
+end
+```
+
+Important: the `lfKeys` snippet is only a reference.  
+For any other keys script, call `UpdateDoorStatus` right after the lock status changes.
+
 
 ## Adding to a Garage System
 

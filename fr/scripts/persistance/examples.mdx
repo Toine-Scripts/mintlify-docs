@@ -113,6 +113,30 @@ Si vous supprimez un véhicule à la main, retirez-le de la persistance pour év
 </Tabs>
 
 
+## Synchroniser l'etat de verrouillage des portes
+
+Quand votre script de cles verrouille/deverrouille un vehicule, mettez aussi a jour `ts-persistence` avec :
+
+`exports['ts-persistence']:UpdateDoorStatus(vehicle, status)`
+
+- `status = 2` pour verrouiller
+- `status = 1` pour deverrouiller
+
+Exemple avec `lfKeys` (meme logique a appliquer a n'importe quel script de cles) :
+
+```lua
+if locked == 1 or locked == 0 then
+    -- votre logique de lock
+    exports['ts-persistence']:UpdateDoorStatus(vehicle, 2)
+elseif locked == 2 then
+    -- votre logique d'unlock
+    exports['ts-persistence']:UpdateDoorStatus(vehicle, 1)
+end
+```
+
+Important : l'exemple `lfKeys` est seulement une reference.  
+Pour tout autre script de cles, appelez simplement `UpdateDoorStatus` juste apres le changement de statut des portes.
+
 
 ## Intégration à un système de garage
 

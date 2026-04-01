@@ -23,6 +23,7 @@ Bridge.VehicleKeys.Server
 | :---------------- | :---------: | -------------: |
 | `qb-vehiclekeys`  | **Testé**  |         Toine  |
 | `qs-vehiclekeys`  | Expérimental | en attente de retours |
+| `lfKeys`          | **Testé**  |         Toine  |
 | `standalone`      | **Testé** | Toine |
 
 ---
@@ -33,17 +34,19 @@ TS-Lib embarque le support pour :
 
 - `qb-vehiclekeys`
 - `qs-vehiclekeys`
+- `lfKeys`
 - `standalone` (aucune ressource de clés externe)
 
 Configuration dans `ts-lib/config.lua` :
 
 ```lua
-Config.VehicleKeys = 'auto' -- 'auto', 'qb-vehiclekeys', 'qs-vehiclekeys', 'standalone'
+Config.VehicleKeys = 'auto' -- 'auto', 'qb-vehiclekeys', 'qs-vehiclekeys', 'lfKeys', 'standalone'
 
 Config.Data = {
   VehicleKeys = {
     ['qb-vehiclekeys'] = 'qb-vehiclekeys',
     ['qs-vehiclekeys'] = 'qs-vehiclekeys',
+    ['lfKeys']         = 'lfKeys',
     ['standalone']     = 'standalone',
   },
 }
@@ -85,6 +88,18 @@ Bridge.VehicleKeys.Client.Functions.SetDoorStatus(vehicle, 1) -- déverrouiller
   ```lua
   Bridge.VehicleKeys.Client.Functions.SetDoorStatus = function(entity, status)
       exports["qs-vehiclekeys"]:DoorLogic(entity, true, status, true, true, true)
+  end
+  ```
+
+- **`lfKeys`**
+
+  ```lua
+  Bridge.VehicleKeys.Client.Functions.SetDoorStatus = function(entity, status)
+      local netId = NetworkGetNetworkIdFromEntity(entity)
+      if not netId then return end
+
+      local isLocking = status ~= 0 and status ~= 1
+      TriggerServerEvent('vehicle:syncLock', netId, status, isLocking)
   end
   ```
 
