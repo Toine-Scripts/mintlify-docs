@@ -1,0 +1,41 @@
+---
+title: "Overview"
+description: "Build, place, and manage persistent props in-game."
+icon: "cubes"
+---
+
+TS Props System is a complete in-game prop management resource for FiveM servers.
+
+It allows players (or staff) to place, move, edit, and delete props, with persistence across restarts.
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/scripts/props-system/installation">
+    Setup guide and dependencies.
+  </Card>
+  <Card title="Configuration" icon="sliders" href="/scripts/props-system/config">
+    Client/server config and limits.
+  </Card>
+  <Card title="Commands" icon="terminal" href="/scripts/props-system/commands">
+    Available in-game commands.
+  </Card>
+  <Card title="Events" icon="bolt" href="/scripts/props-system/events">
+    Internal/client events exposed by the script.
+  </Card>
+</CardGroup>
+
+## Key Features
+
+- In-game menu to manage props
+- Place, move, change model, and delete workflow
+- Optional custom prop model spawning
+- Ownership checks for protected editing
+- Per-player limits with ACE role overrides
+- Database-backed persistence with restart recovery
+
+## Dependencies
+
+- [ts-lib](https://store.toine.me/download/ts-lib)
+- [ox_lib](https://coxdocs.dev/ox_lib)
+- [oxmysql](https://coxdocs.dev/oxmysql)
+- `object_gizmo`
+

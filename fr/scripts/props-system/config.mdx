@@ -1,0 +1,52 @@
+---
+title: "Configuration"
+description: "Options principales de TS Props System."
+icon: "sliders"
+---
+
+Le fichier principal est `shared/config.lua`.
+
+## Configuration client
+
+`Global.Config.Client` gere le comportement en jeu et du menu :
+
+- `spawnRadius` : distance max autour du joueur pour placer un prop
+- `useTarget` : active les interactions target sur les props
+- `allowCustomProps` : autorise la saisie manuelle de modeles
+- `maxDistanceToInteract` : distance max d'interaction
+- `canDeletePropWithoutDistanceCheck` : suppression sans verifier la distance
+- `allowMenuOpenWithoutBeingLoaded` : autorise l'ouverture du menu avant sync complete
+
+Les categories de props sont definies dans :
+
+- `Global.Config.Client.props`
+
+Chaque categorie contient un label et une liste de modeles.
+
+## Configuration serveur
+
+`Global.Config.Server` gere les limites et permissions :
+
+- `defaultLimit` : limite par defaut par joueur
+- `useRoutingBucket` : scope des props par routing bucket
+- `GetPlayerRoutingBucket(source)` : callback utilise si le mode bucket est active
+
+### Limites par role (ACE)
+
+Utilise `rolesDatas` pour definir des limites via ACE :
+
+- `ts.props.admin`
+- `ts.props.moderator`
+- `ts.props.user`
+
+Chaque role peut definir :
+
+- `limit`
+- `name`
+- `color`
+
+## Notes
+
+- Les verifications de proprietaire sont appliquees pour deplacer/modifier/supprimer.
+- Si le mode routing bucket est active, verifie que ton callback retourne bien une valeur valide.
+

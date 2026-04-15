@@ -1,0 +1,44 @@
+---
+title: "Installation"
+description: "Comment installer TS Props System."
+icon: "download"
+---
+
+## 1. Prerequis
+
+Installe ces dependances avant de lancer la ressource :
+
+- **[ts-lib](https://store.toine.me/download/ts-lib)** (obligatoire)
+- **[ox_lib](https://coxdocs.dev/ox_lib)** (obligatoire)
+- **[oxmysql](https://coxdocs.dev/oxmysql)** (obligatoire)
+- **[object_gizmo](https://github.com/Toine-Scripts/object_gizmo)** (obligatoire)
+- **[zUI-v2](https://github.com/ZProject-Official/zUI-v2)** (obligatoire)
+
+## 2. Ajouter la ressource
+
+Place `ts-props-system` dans le dossier `resources` de ton serveur.
+
+## 3. Ordre de lancement
+
+Ajoute ces lignes dans ton `server.cfg` :
+
+```cfg
+ensure <ton_framework>
+ensure ox_lib
+ensure oxmysql
+ensure ts-lib
+ensure object_gizmo
+ensure zUI-v2
+ensure ts-props-system
+```
+
+## 4. Premier demarrage
+
+Au premier lancement, le script cree automatiquement sa table SQL (`ts_props`) si elle n'existe pas.
+
+Si les props ne chargent pas, verifie :
+
+- `oxmysql` est bien lance
+- aucune erreur SQL au demarrage
+- `ensure ts-props-system` est bien apres les dependances
+

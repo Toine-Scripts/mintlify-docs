@@ -71,6 +71,24 @@
                   "scripts/persistance/issues",
                   "scripts/persistance/changelog"
                 ]
+              },
+              {
+                "group": "Props System",
+                "pages": [
+                  "scripts/props-system/index",
+                  "scripts/props-system/installation",
+                  "scripts/props-system/config",
+                  "scripts/props-system/commands",
+                  "scripts/props-system/events",
+                  {
+                    "group": "Exports",
+                    "pages": [
+                      "scripts/props-system/exports/client",
+                      "scripts/props-system/exports/server"
+                    ]
+                  },
+                  "scripts/props-system/changelog"
+                ]
               }
             ]
           }
@@ -127,6 +145,24 @@
                   "fr/scripts/persistance/data-structure",
                   "fr/scripts/persistance/issues",
                   "fr/scripts/persistance/changelog"
+                ]
+              },
+              {
+                "group": "Props System",
+                "pages": [
+                  "fr/scripts/props-system/index",
+                  "fr/scripts/props-system/installation",
+                  "fr/scripts/props-system/config",
+                  "fr/scripts/props-system/commands",
+                  "fr/scripts/props-system/events",
+                  {
+                    "group": "Exports",
+                    "pages": [
+                      "fr/scripts/props-system/exports/client",
+                      "fr/scripts/props-system/exports/server"
+                    ]
+                  },
+                  "fr/scripts/props-system/changelog"
                 ]
               }
             ]

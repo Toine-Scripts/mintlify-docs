@@ -1,0 +1,36 @@
+---
+title: "Events"
+description: "Main runtime events used by TS Props System."
+icon: "bolt"
+---
+
+These events are used internally by the resource and may be useful for advanced integrations.
+
+## Client Events
+
+### `ts-props-system:client:SendProps`
+
+Sends all synced props to a client.
+
+### `ts-props-system:client:SendProp`
+
+Sends a single new prop to clients.
+
+### `ts-props-system:client:ChangeModel`
+
+Notifies clients that a prop model changed.
+
+### `ts-props-system:client:DeleteProp`
+
+Notifies clients that a prop was deleted.
+
+### `ts-props-system:client:SendPlayerData`
+
+Sends player limit and current props count.
+
+### `ts-props-system:client:Unload`
+
+Clears loaded props for a player when unloading.
+
+> Event names and payloads can evolve between versions. Keep custom integrations version-aware.
+
