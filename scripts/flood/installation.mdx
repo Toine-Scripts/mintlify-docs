@@ -1,0 +1,46 @@
+---
+title: "Installation"
+description: "How to install TS Flood."
+icon: "download"
+---
+
+<iframe
+  width="100%"
+  height="400"
+  src="https://www.youtube.com/embed/YOUTUBE_VIDEO_ID"
+  title="TS Flood Installation"
+  frameBorder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+/>
+
+## 1. Requirements
+
+- **[ts-lib](https://store.toine.me/download/ts-lib)** (required)
+- **[ox_lib](https://coxdocs.dev/ox_lib)** (required)
+- **[zUI-v2](https://github.com/ZProject-Official/zUI-v2)** (required)
+- **[ts_flood_water](https://github.com/Toine-Scripts/script-content/releases/tag/flood-scripts)** (required)
+
+## 2. Add the Resources
+
+Put `ts_flood` and `ts_flood_water` in your server `resources` folder.
+
+## 3. Start Order
+
+```cfg
+ensure ox_lib
+ensure ts-lib
+ensure zUI-v2
+ensure ts_flood_water
+ensure ts_flood
+```
+
+## 4. Language
+
+The script uses ox_lib locales. Set your server language in `server.cfg`:
+
+```cfg
+setr ox:locale fr
+```
+
+Supported values: `en`, `fr`.

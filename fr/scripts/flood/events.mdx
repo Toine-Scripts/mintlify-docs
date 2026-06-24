@@ -1,0 +1,54 @@
+---
+title: "Evenements & Exports"
+description: "Evenements client et exports exposés par TS Flood."
+icon: "bolt"
+---
+
+## Evénements client
+
+### `th:event:flood:setForced`
+
+Force le niveau d'eau instantanément à la valeur donnée, sans transition fluide.
+
+```lua
+TriggerClientEvent('th:event:flood:setForced', source, level)
+```
+
+| Paramètre | Type | Description |
+|-----------|------|-------------|
+| `level` | `number` | Niveau d'eau à appliquer immédiatement. |
+
+### `th:event:flood:reset`
+
+Remet l'eau à `0.0` et arrête la transition en cours.
+
+```lua
+TriggerClientEvent('th:event:flood:reset', source)
+```
+
+### `th:event:flood:sync`
+
+Resynchronise le client avec le `GlobalState` actuel. Utile après une reconnexion.
+
+```lua
+TriggerClientEvent('th:event:flood:sync', source)
+```
+
+## Export client
+
+### `GetWaterCurrentLevel`
+
+Retourne le niveau d'eau actuellement appliqué côté client.
+
+```lua
+local level = exports['ts_flood']:GetWaterCurrentLevel()
+```
+
+## Callbacks serveur
+
+Appelés depuis le menu via `lib.callback` :
+
+| Nom | Description |
+|-----|-------------|
+| `th:event:ocean:server:setTargetLevel` | Définit `GlobalState.targetLevel`, déclenche la transition fluide. |
+| `th:event:ocean:server:force:setTargetLevel` | Force le niveau sur tous les clients et met à jour le GlobalState. |

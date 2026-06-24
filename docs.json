@@ -89,6 +89,17 @@
                   },
                   "scripts/props-system/changelog"
                 ]
+              },
+              {
+                "group": "Flood",
+                "pages": [
+                  "scripts/flood/index",
+                  "scripts/flood/installation",
+                  "scripts/flood/config",
+                  "scripts/flood/commands",
+                  "scripts/flood/events",
+                  "scripts/flood/changelog"
+                ]
               }
             ]
           }
@@ -163,6 +174,17 @@
                     ]
                   },
                   "fr/scripts/props-system/changelog"
+                ]
+              },
+              {
+                "group": "Flood",
+                "pages": [
+                  "fr/scripts/flood/index",
+                  "fr/scripts/flood/installation",
+                  "fr/scripts/flood/config",
+                  "fr/scripts/flood/commands",
+                  "fr/scripts/flood/events",
+                  "fr/scripts/flood/changelog"
                 ]
               }
             ]

@@ -1,0 +1,62 @@
+---
+title: "Configuration"
+description: "Config options for TS Flood."
+icon: "sliders"
+---
+
+The config file is `shared/main.lua`.
+
+## Core Settings
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `increaseRate` | `number` | `0.005` | Units per tick the water moves toward its target. |
+| `defaultLevel` | `number` | `0.0` | Water level on resource start. |
+
+## Preset Modes
+
+`Steps` defines the preset levels shown in the menu:
+
+```lua
+Steps = {
+    [1] = { flood = 2, label = 'Mode 1 - Standard (2.0)' },
+    [2] = { flood = 5, label = 'Mode 2 - Medium (5.0)'   },
+    [3] = { flood = 9, label = 'Mode 3 - High (9.0)'     },
+}
+```
+
+Each entry needs:
+- `flood` — target water level
+- `label` — name shown in the menu
+
+## Keybinds
+
+Set `KeyBindActive = true` to enable keybind-triggered sequences.
+
+```lua
+KeyBindActive = true,
+KeyBinds = {
+    {
+        name   = 'key_01',
+        key    = 'F3',
+        action = 'force:setTargetLevel',
+        args   = {
+            level   = 300.0,
+            timeout = 15000,
+            afterTimeout = {
+                action = 'force:setTargetLevel',
+                args   = { level = 0.0 }
+            }
+        },
+    }
+}
+```
+
+| Field | Description |
+|-------|-------------|
+| `name` | Unique identifier. |
+| `key` | Default key binding. |
+| `action` | Action to run (`force:setTargetLevel`). |
+| `args.level` | Target water level. |
+| `args.timeout` | Delay in ms before `afterTimeout` runs (optional). |
+| `args.afterTimeout` | Action to run after the timeout (optional). |
